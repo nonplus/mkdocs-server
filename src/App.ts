@@ -1,12 +1,21 @@
+require("source-map-support").install();
 import * as express from "express";
+var bodyParser = require("body-parser");
+import adminRouter from "./views/admin/routes";
+import db from "./db/db";
 
 class App {
   public app;
 
   constructor() {
     this.app = express();
+    this.configParsers();
     this.configViews();
     this.mountRoutes();
+  }
+
+  private configParsers() {
+    this.app.use(bodyParser.urlencoded({ extended: false }));
   }
 
   private configViews() {
@@ -17,25 +26,14 @@ class App {
   private mountRoutes(): void {
     const router = express.Router();
     router.get("/", (req, res) => {
-      const sites = [{
-        title: "First Site",
-        name: "first"
-      }, {
-        title: "Second Site",
-        name: "second"
-      }, {
-        title: "Third Site",
-        name: "third"
-      }, {
-        title: "Fourth Site",
-        name: "fourth"
-      }];
       res.render("home", {
-        sites
+        sites: db.get("sites").value()
       });
     });
     this.app.use("/", router);
+    this.app.use("/\\$admin", adminRouter);
   }
+
 }
 
 export default new App().app;

@@ -1,0 +1,22 @@
+extends ../page
+
+block content
+  h1.page-header Administration
+
+  table.table.table-condensed
+    thead
+      tr
+        th Title
+        th Name
+        th
+    tbody
+      each site in sites
+        tr
+          td= site.title
+          td= site.name
+          td
+            a(href="/$admin/rebuild?site=" + site.name) Rebuild
+
+  hr
+
+  a.btn.btn-default(href="/$admin/new-site") Register a New Site...
