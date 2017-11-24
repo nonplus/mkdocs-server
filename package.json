@@ -1,7 +1,7 @@
 {
-  "name": "@risingstack/rest-api-typescript",
+  "name": "mkdocs-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web server for building and serving MkDocs from Git Repos",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
@@ -10,9 +10,9 @@
     "lint": "eslint src --ext ts",
     "tsc": "tsc"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["mkdocs"],
+  "author": "Stepan Riha",
+  "license": "MIT",
   "dependencies": {
     "@types/node": "7.0.22",
     "express": "4.15.3",
@@ -20,15 +20,13 @@
   },
   "devDependencies": {
     "@types/mocha": "2.2.41",
-    "@types/node": "7.0.22",
-    "eslint": "4.0.0",
+    "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "11.2.0",
     "eslint-plugin-import": "2.3.0",
     "eslint-plugin-promise": "3.5.0",
     "mocha": "3.4.2",
     "supertest": "3.0.0",
-    "tsc": "1.20150623.0",
-    "typescript": "2.3.3",
+    "typescript": "2.3.4",
     "typescript-eslint-parser": "3.0.0"
   }
 }
