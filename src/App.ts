@@ -1,22 +1,41 @@
-import * as express from 'express';
+import * as express from "express";
 
 class App {
-  public express;
+  public app;
 
-  constructor () {
-    this.express = express();
+  constructor() {
+    this.app = express();
+    this.configViews();
     this.mountRoutes();
   }
 
-  private mountRoutes (): void {
+  private configViews() {
+    this.app.set("views", "./src/views");
+    this.app.set("view engine", "pug");
+  }
+
+  private mountRoutes(): void {
     const router = express.Router();
-    router.get('/', (req, res) => {
-      res.json({
-        message: 'Hello World!'
+    router.get("/", (req, res) => {
+      const sites = [{
+        title: "First Site",
+        name: "first"
+      }, {
+        title: "Second Site",
+        name: "second"
+      }, {
+        title: "Third Site",
+        name: "third"
+      }, {
+        title: "Fourth Site",
+        name: "fourth"
+      }];
+      res.render("home", {
+        sites
       });
     });
-    this.express.use('/', router);
+    this.app.use("/", router);
   }
 }
 
-export default new App().express;
+export default new App().app;

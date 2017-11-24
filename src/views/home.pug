@@ -1,0 +1,9 @@
+extends page
+
+block content
+  h1.page-header Sites
+
+  .list-group
+    each site in sites
+      a.list-group-item(href='/' + site.name)= site.title
+
