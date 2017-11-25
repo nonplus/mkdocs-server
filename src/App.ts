@@ -1,12 +1,13 @@
 import sms = require("source-map-support");
+
 sms.install();
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as _ from "lodash";
-import db from "./db/db";
+
 import Project from "./Project";
-import adminRouter from "./views/admin/routes";
+import adminRouter from "./views/config/routes";
 
 class App {
   public express;
@@ -29,7 +30,7 @@ class App {
   }
 
   private configParsers() {
-    this.express.use(bodyParser.urlencoded({ extended: false }));
+    this.express.use(bodyParser.urlencoded({extended: false}));
   }
 
   private configViews() {

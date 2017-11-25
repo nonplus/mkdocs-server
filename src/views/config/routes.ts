@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/new-project", (req, res) => {
-  res.render("admin/new-project");
+  res.render("config/new-project");
 });
 
 router.post("/new-project", (req, res) => {
@@ -24,7 +24,7 @@ router.post("/new-project", (req, res) => {
   const existing = Project.resolve(id);
 
   if (existing) {
-    res.render("admin/new-project", {
+    res.render("config/new-project", {
       repo, id, title, $alert: {
         danger: `The "${id}" ID is already used by the "${existing.title}" project.`
       }
@@ -39,7 +39,7 @@ router.post("/new-project", (req, res) => {
 
 router.get("/projects/:id", (req, res) => {
   const project = Project.resolve(req.params.id);
-  res.render("admin/project", { project });
+  res.render("config/project", { project });
 });
 
 router.post("/projects/:id", (req, res) => {
@@ -61,7 +61,7 @@ router.post("/projects/:id", (req, res) => {
       return;
   }
 
-  res.render("admin/project", { project });
+  res.render("config/project", { project });
 });
 
 router.post("/rebuild/:id", (req, res) => {
@@ -85,7 +85,7 @@ function goToAdminHome(res) {
 }
 
 function renderAdminHome(res, $alert?) {
-  res.render("admin/index", {
+  res.render("config/index", {
     projects: _.sortBy(Project.allProjects(), (project) => (project.id || "").toLowerCase()),
     $alert
   });
