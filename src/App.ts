@@ -45,7 +45,7 @@ class App {
       });
     });
     this.express.use("/", router);
-    this.express.use("/\\$admin", adminRouter);
+    this.express.use("/\\$config", adminRouter);
   }
 
 }

@@ -81,7 +81,7 @@ router.post("/rebuild/:id", (req, res) => {
 });
 
 function goToAdminHome(res) {
-  res.redirect("/$admin");
+  res.redirect("/$config");
 }
 
 function renderAdminHome(res, $alert?) {
