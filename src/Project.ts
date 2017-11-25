@@ -1,13 +1,13 @@
-import {spawn, SpawnOptions} from 'child_process';
 import * as BPromise from "bluebird";
-import db from "./db/db";
+import {spawn, SpawnOptions} from "child_process";
 import * as _ from "lodash";
 import * as path from "path";
+import db from "./db/db";
 
-import app from "./App";
 import rimraf = require("rimraf");
+import app from "./App";
 
-const YAML = require('yamljs');
+import YAML = require("yamljs");
 
 enum ProjectStatus {
   new,
@@ -40,29 +40,12 @@ interface ProjectConfig {
     site_description?: string;
     site_author?: string;
     site_dir?: string;
-  }
+  };
 }
 
 export default class Project {
-  id: string;
-  title: string;
-  repo: string;
-  status: ProjectStatus;
-  activity: ProjectActivity | null;
-  error: {
-    code?: number;
-    message: string;
-    log: string;
-  } | null;
-  mkdocsConfig: {
-    site_name: string;
-    site_url?: string;
-    site_description?: string;
-    site_author?: string;
-    site_dir?: string;
-  };
 
-  static resolve(id: string) {
+  public static resolve(id: string) {
     const config = db.get("projects").find({id}).value();
     if (config) {
       return new Project(config);
@@ -71,17 +54,35 @@ export default class Project {
     }
   }
 
-  static allProjects() {
-    return db.get("projects").map(config => new Project(config)).value();
+  public static allProjects() {
+    return db.get("projects").map((config) => new Project(config)).value();
   }
 
-  static publishedProjects() {
+  public static publishedProjects() {
     return db
       .get("projects")
       .filter({status: ProjectStatus.docsPublished})
-      .map(config => new Project(config))
+      .map((config) => new Project(config))
       .value();
   }
+
+  public id: string;
+  public title: string;
+  public repo: string;
+  public status: ProjectStatus;
+  public activity: ProjectActivity | null;
+  public error: {
+    code?: number;
+    message: string;
+    log: string;
+  } | null;
+  public mkdocsConfig: {
+    site_name: string;
+    site_url?: string;
+    site_description?: string;
+    site_author?: string;
+    site_dir?: string;
+  };
 
   constructor(config: ProjectConfig) {
     this.id = config.id;
@@ -102,16 +103,16 @@ export default class Project {
       case ProjectStatus.docsPublished:
         return "Published";
       default:
-        `Unknown ${this.status}`;
+        return `Unknown ${this.status}`;
     }
   }
 
   get siteDirectory(): string {
-    return path.join(this.repoDirectory, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site")
+    return path.join(this.repoDirectory, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site");
   }
 
   get repoDirectory(): string {
-    return path.join("repos", this.id)
+    return path.join("repos", this.id);
   }
 
   get siteDescription(): string {
@@ -139,20 +140,20 @@ export default class Project {
     return `Unknown ${this.activity}...`;
   }
 
-  async initialize() {
+  public async initialize() {
     await this.cloneRepo();
     this.refreshMkdDocsInfo();
     await this.publishDocs();
   }
 
-  async resetProject() {
+  public async resetProject() {
     this.update({
       status: ProjectStatus.new,
       activity: ProjectActivity.resettingProject,
       error: null
     });
 
-    let repoDirectory = this.repoDirectory;
+    const repoDirectory = this.repoDirectory;
 
     const promise = this.deleteRepo();
 
@@ -161,7 +162,7 @@ export default class Project {
         mkdocsConfig: null,
         activity: null
       }),
-      err => this.update({
+      (err) => this.update({
         mkdocsConfig: null,
         activity: null,
         error: {
@@ -174,7 +175,7 @@ export default class Project {
     return promise;
   }
 
-  async deleteProject() {
+  public async deleteProject() {
     const id = this.id;
 
     this.update({
@@ -183,7 +184,7 @@ export default class Project {
       error: null
     });
 
-    let repoDirectory = this.repoDirectory;
+    const repoDirectory = this.repoDirectory;
 
     const promise = this.deleteRepo();
 
@@ -198,13 +199,8 @@ export default class Project {
     }
   }
 
-  private async deleteRepo() {
-    const rimrafp = BPromise.promisify(rimraf);
-    return rimrafp(this.repoDirectory);
-  }
-
-  async rebuild() {
-    if (this.status == ProjectStatus.new) {
+  public async rebuild() {
+    if (this.status === ProjectStatus.new) {
       await this.cloneRepo();
     } else {
       await this.updateRepo();
@@ -212,12 +208,12 @@ export default class Project {
     await this.publishDocs();
   }
 
-  async cloneRepo() {
+  public async cloneRepo() {
     const dfd = BPromise.defer();
 
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
-    const gitClone = this.spawn('git', ['clone', '--depth=1', this.repo, this.id], {
+    const gitClone = this.spawn("git", ["clone", "--depth=1", this.repo, this.id], {
       cwd: "./repos"
     });
 
@@ -227,7 +223,7 @@ export default class Project {
           activity: null,
           status: ProjectStatus.repoCloned
         });
-      }, err => {
+      }, (err) => {
         this.update({
           activity: null,
           error: {
@@ -239,11 +235,11 @@ export default class Project {
       });
   }
 
-  resolve() {
+  public resolve() {
     return Project.resolve(this.id);
   }
 
-  update(options: Partial<ProjectConfig>) {
+  public update(options: Partial<ProjectConfig>) {
     console.log("update", this.id, JSON.stringify(options));
     db.get("projects").find({id: this.id})
       .assign(options)
@@ -251,12 +247,12 @@ export default class Project {
     _.extend(this, options);
   }
 
-  async updateRepo() {
+  public async updateRepo() {
     const dfd = BPromise.defer();
 
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
-    const gitPull = this.spawn('git', ['pull', '--depth=1', '-f'], {
+    const gitPull = this.spawn("git", ["pull", "--depth=1", "-f"], {
       cwd: `./repos/${this.id}`
     });
 
@@ -265,7 +261,7 @@ export default class Project {
         this.update({
           activity: null
         });
-      }, err => {
+      }, (err) => {
         this.update({
           activity: null,
           error: {
@@ -277,12 +273,12 @@ export default class Project {
       });
   }
 
-  async publishDocs() {
+  public async publishDocs() {
     const dfd = BPromise.defer();
 
     this.update({activity: ProjectActivity.publishingDocs, error: null});
 
-    const publish = this.spawn('mkdocs', ['build'], {
+    const publish = this.spawn("mkdocs", ["build"], {
       cwd: `./repos/${this.id}`
     });
 
@@ -292,7 +288,7 @@ export default class Project {
           activity: null,
           status: ProjectStatus.docsPublished
         });
-      }, err => {
+      }, (err) => {
         this.update({
           activity: null,
           error: {
@@ -303,6 +299,11 @@ export default class Project {
         });
       });
 
+  }
+
+  private async deleteRepo() {
+    const rimrafp = BPromise.promisify(rimraf);
+    return rimrafp(this.repoDirectory);
   }
 
   private refreshMkdDocsInfo() {
@@ -329,22 +330,22 @@ export default class Project {
 
     const log = [];
 
-    childProcess.stdout.on('data', data => {
+    childProcess.stdout.on("data", (data) => {
       log.push(data);
       console.log(`stdout: ${data}`);
     });
 
-    childProcess.stderr.on('data', data => {
+    childProcess.stderr.on("data", (data) => {
       log.push(data);
       console.log(`stderr: ${data}`);
     });
 
-    childProcess.on('close', code => {
+    childProcess.on("close", (code) => {
       console.log(`child process exited with code ${code}`);
       if (code) {
         const error = new Error();
-        error["code"] = code;
-        error["log"] = log.join();
+        error.code = code;
+        error.log = log.join();
         dfd.reject(error);
       } else {
         dfd.resolve({

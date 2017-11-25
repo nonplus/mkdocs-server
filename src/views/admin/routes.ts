@@ -77,15 +77,15 @@ router.post("/rebuild/:id", (req, res) => {
   } else {
     $alert = {info: `Rebuilding "${id}"...`};
     project.rebuild()
-      .then(() => console.log("Rebuild finished!"), err => console.error("Rebuild failed", err));
+      .then(() => console.log("Rebuild finished!"), (err) => console.error("Rebuild failed", err));
   }
 
   renderAdminHome(res, $alert);
 });
 
-function renderAdminHome(res, $alert = undefined) {
+function renderAdminHome(res, $alert?) {
   res.render("admin/index", {
-    projects: _.sortBy(Project.allProjects(), project => (project.id||"").toLowerCase()),
+    projects: _.sortBy(Project.allProjects(), (project) => (project.id || "").toLowerCase()),
     $alert
   });
 }
