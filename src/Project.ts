@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import * as path from "path";
 
 import app from "./App";
+import rimraf = require("rimraf");
 
 const YAML = require('yamljs');
 
@@ -17,7 +18,9 @@ enum ProjectStatus {
 enum ProjectActivity {
   cloningRepo,
   updatingRepo,
-  publishingDocs
+  publishingDocs,
+  resettingProject,
+  deletingProject
 }
 
 interface ProjectConfig {
@@ -27,7 +30,7 @@ interface ProjectConfig {
   status: ProjectStatus | null;
   activity: ProjectActivity | null;
   error: {
-    code: number;
+    code?: number;
     message: string;
     log: string;
   } | null;
@@ -47,7 +50,7 @@ export default class Project {
   status: ProjectStatus;
   activity: ProjectActivity | null;
   error: {
-    code: number;
+    code?: number;
     message: string;
     log: string;
   } | null;
@@ -104,7 +107,11 @@ export default class Project {
   }
 
   get siteDirectory(): string {
-    return path.join("repos", this.id, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site")
+    return path.join(this.repoDirectory, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site")
+  }
+
+  get repoDirectory(): string {
+    return path.join("repos", this.id)
   }
 
   get siteDescription(): string {
@@ -115,6 +122,7 @@ export default class Project {
     if (!Boolean(this.activity)) {
       return "";
     }
+
     switch (this.activity) {
       case ProjectActivity.cloningRepo:
         return "Cloning Repo...";
@@ -122,6 +130,10 @@ export default class Project {
         return "Updating Repo...";
       case ProjectActivity.publishingDocs:
         return "Publishing...";
+      case ProjectActivity.resettingProject:
+        return "Resetting...";
+      case ProjectActivity.deletingProject:
+        return "Deleting...";
     }
 
     return `Unknown ${this.activity}...`;
@@ -131,6 +143,64 @@ export default class Project {
     await this.cloneRepo();
     this.refreshMkdDocsInfo();
     await this.publishDocs();
+  }
+
+  async resetProject() {
+    this.update({
+      status: ProjectStatus.new,
+      activity: ProjectActivity.resettingProject,
+      error: null
+    });
+
+    let repoDirectory = this.repoDirectory;
+
+    const promise = this.deleteRepo();
+
+    promise.then(
+      () => this.update({
+        mkdocsConfig: null,
+        activity: null
+      }),
+      err => this.update({
+        mkdocsConfig: null,
+        activity: null,
+        error: {
+          message: `Failed deleting ${repoDirectory}`,
+          log: err.toString()
+        }
+      })
+    );
+
+    return promise;
+  }
+
+  async deleteProject() {
+    const id = this.id;
+
+    this.update({
+      status: ProjectStatus.new,
+      activity: ProjectActivity.deletingProject,
+      error: null
+    });
+
+    let repoDirectory = this.repoDirectory;
+
+    const promise = this.deleteRepo();
+
+    promise.then(destroy, destroy);
+
+    return promise;
+
+    function destroy() {
+      db.get("projects")
+        .remove({ id })
+        .write();
+    }
+  }
+
+  private async deleteRepo() {
+    const rimrafp = BPromise.promisify(rimraf);
+    return rimrafp(this.repoDirectory);
   }
 
   async rebuild() {
@@ -254,8 +324,6 @@ export default class Project {
 
   private async spawn(command: string, args?: string[], options?: SpawnOptions) {
     const dfd = BPromise.defer();
-
-    this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     const childProcess = spawn(command, args, options);
 

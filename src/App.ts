@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as _ from "lodash";
 
 require("source-map-support").install();
 import * as express from "express";
@@ -40,7 +40,7 @@ class App {
     const router = express.Router();
     router.get("/", (req, res) => {
       res.render("home", {
-        projects: Project.publishedProjects()
+        projects: _.sortBy(Project.publishedProjects(), project => (project.title||"").toLowerCase())
       });
     });
     this.express.use("/", router);

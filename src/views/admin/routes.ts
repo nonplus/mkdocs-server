@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as _ from "lodash";
 import db from "../../db/db";
 import Project from "../../Project";
 
@@ -7,9 +8,7 @@ const router = express.Router();
 export default router;
 
 router.get("/", (req, res) => {
-  res.render("admin/index", {
-    projects: Project.allProjects()
-  });
+  renderAdminHome(res);
 });
 
 router.get("/new-project", (req, res) => {
@@ -46,6 +45,28 @@ router.get("/projects/:id", (req, res) => {
   res.render("admin/project", { project });
 });
 
+router.post("/projects/:id", (req, res) => {
+  const project = Project.resolve(req.params.id);
+  switch (req.body.action) {
+    case "update":
+      console.log("update repo", req.body.repo);
+      project.update({
+        repo: req.body.repo
+      });
+      // Fall through
+    case "reset":
+      project.resetProject();
+      res.redirect("/$admin");
+      return;
+    case "delete":
+      project.deleteProject();
+      res.redirect("/$admin");
+      return;
+  }
+
+  res.render("admin/project", { project });
+});
+
 router.post("/rebuild/:id", (req, res) => {
   const id = req.params.id;
   const project = Project.resolve(id);
@@ -59,9 +80,12 @@ router.post("/rebuild/:id", (req, res) => {
       .then(() => console.log("Rebuild finished!"), err => console.error("Rebuild failed", err));
   }
 
+  renderAdminHome(res, $alert);
+});
+
+function renderAdminHome(res, $alert = undefined) {
   res.render("admin/index", {
-    projects: Project.allProjects(),
+    projects: _.sortBy(Project.allProjects(), project => (project.id||"").toLowerCase()),
     $alert
   });
-
-});
+}
