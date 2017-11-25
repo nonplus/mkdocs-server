@@ -57,6 +57,13 @@ export default class Project {
     }
   }
 
+  public static add(project: Partial<ProjectConfig>) {
+    db
+      .get("projects")
+      .push(project)
+      .write();
+  }
+
   public static allProjects(): Project[] {
     return db
       .get("projects")

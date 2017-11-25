@@ -21,7 +21,6 @@ router.post("/new-project", (req, res) => {
 
   // TODO: Sanitize repo
 
-  const projects = db.get("projects");
   const existing = Project.resolve(id);
 
   if (existing) {
@@ -31,10 +30,8 @@ router.post("/new-project", (req, res) => {
       }
     });
   } else {
-    projects
-      .push({repo, id, title})
-      .write();
-    res.redirect("/");
+    Project.add({repo, id, title});
+    goToAdminHome(res);
     Project.resolve(id)
       .initialize();
   }
@@ -56,11 +53,11 @@ router.post("/projects/:id", (req, res) => {
       // Fall through
     case "reset":
       project.resetProject();
-      res.redirect("/$admin");
+      goToAdminHome(res);
       return;
     case "delete":
       project.deleteProject();
-      res.redirect("/$admin");
+      goToAdminHome(res);
       return;
   }
 
@@ -82,6 +79,10 @@ router.post("/rebuild/:id", (req, res) => {
 
   renderAdminHome(res, $alert);
 });
+
+function goToAdminHome(res) {
+  res.redirect("/$admin");
+}
 
 function renderAdminHome(res, $alert?) {
   res.render("admin/index", {
