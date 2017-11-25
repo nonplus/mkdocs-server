@@ -8,24 +8,24 @@ import app from "./App";
 
 const YAML = require('yamljs');
 
-enum SiteStatus {
+enum ProjectStatus {
   new,
   repoCloned,
   docsPublished
 }
 
-enum SiteActivity {
+enum ProjectActivity {
   cloningRepo,
   updatingRepo,
   publishingDocs
 }
 
-interface SiteConfig {
-  name: string;
+interface ProjectConfig {
+  id: string;
   title: string;
   repo: string;
-  status: SiteStatus | null;
-  activity: SiteActivity | null;
+  status: ProjectStatus | null;
+  activity: ProjectActivity | null;
   error: {
     code: number;
     message: string;
@@ -40,12 +40,12 @@ interface SiteConfig {
   }
 }
 
-export default class Site {
-  name: string;
+export default class Project {
+  id: string;
   title: string;
   repo: string;
-  status: SiteStatus;
-  activity: SiteActivity | null;
+  status: ProjectStatus;
+  activity: ProjectActivity | null;
   error: {
     code: number;
     message: string;
@@ -59,44 +59,44 @@ export default class Site {
     site_dir?: string;
   };
 
-  static resolve(name: string) {
-    const config = db.get("sites").find({name}).value();
+  static resolve(id: string) {
+    const config = db.get("projects").find({id}).value();
     if (config) {
-      return new Site(config);
+      return new Project(config);
     } else {
       return null;
     }
   }
 
-  static allSites() {
-    return db.get("sites").map(config => new Site(config)).value();
+  static allProjects() {
+    return db.get("projects").map(config => new Project(config)).value();
   }
 
-  static publishedSites() {
+  static publishedProjects() {
     return db
-      .get("sites")
-      .filter({status: SiteStatus.docsPublished})
-      .map(config => new Site(config))
+      .get("projects")
+      .filter({status: ProjectStatus.docsPublished})
+      .map(config => new Project(config))
       .value();
   }
 
-  constructor(config: SiteConfig) {
-    this.name = config.name;
+  constructor(config: ProjectConfig) {
+    this.id = config.id;
     this.title = config.title;
     this.repo = config.repo;
     this.error = config.error;
     this.activity = config.activity || null;
     this.mkdocsConfig = config.mkdocsConfig;
-    this.status = config.status || SiteStatus.new;
+    this.status = config.status || ProjectStatus.new;
   }
 
   get statusLabel(): string {
     switch (this.status) {
-      case SiteStatus.new:
+      case ProjectStatus.new:
         return "New";
-      case SiteStatus.repoCloned:
+      case ProjectStatus.repoCloned:
         return "Cloned";
-      case SiteStatus.docsPublished:
+      case ProjectStatus.docsPublished:
         return "Published";
       default:
         `Unknown ${this.status}`;
@@ -104,7 +104,7 @@ export default class Site {
   }
 
   get siteDirectory(): string {
-    return path.join("repos", this.name, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site")
+    return path.join("repos", this.id, this.mkdocsConfig ? this.mkdocsConfig.site_dir : "site")
   }
 
   get siteDescription(): string {
@@ -116,11 +116,11 @@ export default class Site {
       return "";
     }
     switch (this.activity) {
-      case SiteActivity.cloningRepo:
+      case ProjectActivity.cloningRepo:
         return "Cloning Repo...";
-      case SiteActivity.updatingRepo:
+      case ProjectActivity.updatingRepo:
         return "Updating Repo...";
-      case SiteActivity.publishingDocs:
+      case ProjectActivity.publishingDocs:
         return "Publishing...";
     }
 
@@ -134,7 +134,7 @@ export default class Site {
   }
 
   async rebuild() {
-    if (this.status == SiteStatus.new) {
+    if (this.status == ProjectStatus.new) {
       await this.cloneRepo();
     } else {
       await this.updateRepo();
@@ -145,9 +145,9 @@ export default class Site {
   async cloneRepo() {
     const dfd = BPromise.defer();
 
-    this.update({activity: SiteActivity.cloningRepo, error: null});
+    this.update({activity: ProjectActivity.cloningRepo, error: null});
 
-    const gitClone = this.spawn('git', ['clone', '--depth=1', this.repo, this.name], {
+    const gitClone = this.spawn('git', ['clone', '--depth=1', this.repo, this.id], {
       cwd: "./repos"
     });
 
@@ -155,7 +155,7 @@ export default class Site {
       .then(() => {
         this.update({
           activity: null,
-          status: SiteStatus.repoCloned
+          status: ProjectStatus.repoCloned
         });
       }, err => {
         this.update({
@@ -170,12 +170,12 @@ export default class Site {
   }
 
   resolve() {
-    return Site.resolve(this.name);
+    return Project.resolve(this.id);
   }
 
-  update(options: Partial<SiteConfig>) {
-    console.log("update", this.name, JSON.stringify(options));
-    db.get("sites").find({name: this.name})
+  update(options: Partial<ProjectConfig>) {
+    console.log("update", this.id, JSON.stringify(options));
+    db.get("projects").find({id: this.id})
       .assign(options)
       .write();
     _.extend(this, options);
@@ -184,10 +184,10 @@ export default class Site {
   async updateRepo() {
     const dfd = BPromise.defer();
 
-    this.update({activity: SiteActivity.updatingRepo, error: null});
+    this.update({activity: ProjectActivity.updatingRepo, error: null});
 
     const gitPull = this.spawn('git', ['pull', '--depth=1', '-f'], {
-      cwd: `./repos/${this.name}`
+      cwd: `./repos/${this.id}`
     });
 
     return gitPull
@@ -210,17 +210,17 @@ export default class Site {
   async publishDocs() {
     const dfd = BPromise.defer();
 
-    this.update({activity: SiteActivity.publishingDocs, error: null});
+    this.update({activity: ProjectActivity.publishingDocs, error: null});
 
     const publish = this.spawn('mkdocs', ['build'], {
-      cwd: `./repos/${this.name}`
+      cwd: `./repos/${this.id}`
     });
 
     return publish
       .then(() => {
         this.update({
           activity: null,
-          status: SiteStatus.docsPublished
+          status: ProjectStatus.docsPublished
         });
       }, err => {
         this.update({
@@ -237,13 +237,13 @@ export default class Site {
 
   private refreshMkdDocsInfo() {
     try {
-      const doc = YAML.load(`./repos/${this.name}/mkdocs.yml`);
+      const doc = YAML.load(`./repos/${this.id}/mkdocs.yml`);
       const mkdocsConfig = _.pick(doc, "site_name", "site_url", "site_description", "site_author", "site_dir");
       if (!mkdocsConfig.site_dir) {
         mkdocsConfig.site_dir = "site";
       }
-      db.get('sites')
-        .find({name: this.name})
+      db.get("projects")
+        .find({id: this.id})
         .assign({mkdocsConfig, title: mkdocsConfig.site_name || this.title})
         .write();
       app.configStaticSites();
@@ -255,13 +255,14 @@ export default class Site {
   private async spawn(command: string, args?: string[], options?: SpawnOptions) {
     const dfd = BPromise.defer();
 
-    this.update({activity: SiteActivity.cloningRepo, error: null});
+    this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     const childProcess = spawn(command, args, options);
 
     const log = [];
 
     childProcess.stdout.on('data', data => {
+      log.push(data);
       console.log(`stdout: ${data}`);
     });
 

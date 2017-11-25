@@ -4,8 +4,8 @@ block content
   h2.page-header Published Sites
 
   .list-group
-    each site in sites
-      a.list-group-item(href='/' + site.name)
-        strong= site.title
-        span.text-muted=" - " + site.siteDescription
+    each project in projects
+      a.list-group-item(href='/' + project.id)
+        strong= project.title
+        span.text-muted=" - " + project.siteDescription
 

@@ -5,7 +5,7 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import adminRouter from "./views/admin/routes";
 import db from "./db/db";
-import Site from "./Site";
+import Project from "./Project";
 
 class App {
   public express;
@@ -28,11 +28,11 @@ class App {
   }
 
   public configStaticSites() {
-    Site.publishedSites()
-      .forEach(site => {
-        let siteDirectory = site.siteDirectory;
-        console.log("Mapping", `/${site.name}`, "to", siteDirectory);
-        this.express.use(`/${site.name}`, express.static(siteDirectory))
+    Project.publishedProjects()
+      .forEach(project => {
+        let siteDirectory = project.siteDirectory;
+        console.log("Mapping", `/${project.id}`, "to", siteDirectory);
+        this.express.use(`/${project.id}`, express.static(siteDirectory))
       });
   }
 
@@ -40,7 +40,7 @@ class App {
     const router = express.Router();
     router.get("/", (req, res) => {
       res.render("home", {
-        sites: Site.publishedSites()
+        projects: Project.publishedProjects()
       });
     });
     this.express.use("/", router);

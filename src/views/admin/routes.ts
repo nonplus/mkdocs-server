@@ -1,6 +1,6 @@
 import * as express from "express";
 import db from "../../db/db";
-import Site from "../../Site";
+import Project from "../../Project";
 
 const router = express.Router();
 
@@ -8,54 +8,54 @@ export default router;
 
 router.get("/", (req, res) => {
   res.render("admin/index", {
-    sites: Site.allSites()
+    projects: Project.allProjects()
   });
 });
 
-router.get("/new-site", (req, res) => {
-  res.render("admin/new-site");
+router.get("/new-project", (req, res) => {
+  res.render("admin/new-project");
 });
 
-router.post("/new-site", (req, res) => {
-  const {repo, name, title} = req.body;
-  console.log({repo, name, title});
+router.post("/new-project", (req, res) => {
+  const {repo, id, title} = req.body;
+  console.log({repo, id, title});
 
   // TODO: Sanitize repo
 
-  const sites = db.get("sites");
-  const existing = Site.resolve(name);
+  const projects = db.get("projects");
+  const existing = Project.resolve(id);
 
   if (existing) {
-    res.render("admin/new-site", {
-      repo, name, title, $alert: {
-        danger: `The "${name}" name is already used by the "${existing.title}" site.`
+    res.render("admin/new-project", {
+      repo, id, title, $alert: {
+        danger: `The "${id}" ID is already used by the "${existing.title}" project.`
       }
     });
   } else {
-    sites
-      .push({repo, name, title})
+    projects
+      .push({repo, id, title})
       .write();
     res.redirect("/");
-    Site.resolve(name)
+    Project.resolve(id)
       .initialize();
   }
 });
 
-router.post("/rebuild/:site", (req, res) => {
-  const name = req.params.site;
-  const site = Site.resolve(name);
+router.post("/rebuild/:id", (req, res) => {
+  const id = req.params.id;
+  const project = Project.resolve(id);
   let $alert;
 
-  if (!site) {
-    $alert = {danger: `The site "${name}" does not exist.`};
+  if (!project) {
+    $alert = {danger: `The project "${id}" does not exist.`};
   } else {
-    $alert = {info: `Rebuilding "${name}"...`};
-    site.rebuild()
+    $alert = {info: `Rebuilding "${id}"...`};
+    project.rebuild()
       .then(() => console.log("Rebuild finished!"), err => console.error("Rebuild failed", err));
   }
 
   res.render("admin/index", {
-    sites: Site.allSites(),
+    projects: Project.allProjects(),
     $alert
   });
 

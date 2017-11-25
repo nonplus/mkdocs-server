@@ -7,22 +7,22 @@ block content
     thead
       tr
         th Status
-        th Name
+        th ID
         th Title
         th
     tbody
-      each site in sites
+      each project in projects
         tr
           td
-            =site.statusLabel + " " + site.activityLabel
-            if site.error
+            =project.statusLabel + " " + project.activityLabel
+            if project.error
               | ERROR
-          td= site.name
-          td= site.title
+          td= project.id
+          td= project.title
           td
-            form(method="POST", action="/$admin/rebuild/" + site.name)
+            form(method="POST", action="/$admin/rebuild/" + project.id)
               input.btn.btn-default.btn-xs(type="submit" value="Rebuild")
 
   hr
 
-  a.btn.btn-default(href="/$admin/new-site") Register a New Site...
+  a.btn.btn-default(href="/$admin/new-project") Register a New Site...
