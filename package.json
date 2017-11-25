@@ -8,6 +8,7 @@
     "dev": "tsc --watch & nodemon dist",
     "test": "tsc && mocha dist/**/*.spec.js",
     "lint": "tslint -p tsconfig.json",
+    "lint-fix": "tslint --fix -p tsconfig.json",
     "tsc": "tsc"
   },
   "keywords": [
@@ -39,6 +40,6 @@
     "mocha": "3.4.2",
     "supertest": "3.0.0",
     "tslint": "^5.8.0",
-    "typescript": "2.3.4"
+    "typescript": "^2.6.1"
   }
 }
