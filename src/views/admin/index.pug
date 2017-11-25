@@ -1,21 +1,27 @@
 extends ../page
 
 block content
-  h1.page-header Administration
+  h2.page-header Administration
 
   table.table.table-condensed
     thead
       tr
-        th Title
+        th Status
         th Name
+        th Title
         th
     tbody
       each site in sites
         tr
-          td= site.title
-          td= site.name
           td
-            a(href="/$admin/rebuild?site=" + site.name) Rebuild
+            =site.statusLabel + " " + site.activityLabel
+            if site.error
+              | ERROR
+          td= site.name
+          td= site.title
+          td
+            form(method="POST", action="/$admin/rebuild/" + site.name)
+              input.btn.btn-default.btn-xs(type="submit" value="Rebuild")
 
   hr
 

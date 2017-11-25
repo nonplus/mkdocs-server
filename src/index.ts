@@ -2,7 +2,7 @@ import app from "./App";
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, (err) => {
+app.express.listen(port, (err) => {
   if (err) {
     return console.log(err);
   }

@@ -1,0 +1,3 @@
+{
+  "ignore": ["db.text", "db.json", "repos/*"]
+}

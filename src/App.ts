@@ -1,39 +1,52 @@
+import * as path from "path";
+
 require("source-map-support").install();
 import * as express from "express";
-var bodyParser = require("body-parser");
+import * as bodyParser from "body-parser";
 import adminRouter from "./views/admin/routes";
 import db from "./db/db";
+import Site from "./Site";
 
 class App {
-  public app;
+  public express;
 
   constructor() {
-    this.app = express();
+    this.express = express();
     this.configParsers();
     this.configViews();
     this.mountRoutes();
+    this.configStaticSites();
   }
 
   private configParsers() {
-    this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.express.use(bodyParser.urlencoded({ extended: false }));
   }
 
   private configViews() {
-    this.app.set("views", "./src/views");
-    this.app.set("view engine", "pug");
+    this.express.set("views", "./src/views");
+    this.express.set("view engine", "pug");
+  }
+
+  public configStaticSites() {
+    Site.publishedSites()
+      .forEach(site => {
+        let siteDirectory = site.siteDirectory;
+        console.log("Mapping", `/${site.name}`, "to", siteDirectory);
+        this.express.use(`/${site.name}`, express.static(siteDirectory))
+      });
   }
 
   private mountRoutes(): void {
     const router = express.Router();
     router.get("/", (req, res) => {
       res.render("home", {
-        sites: db.get("sites").value()
+        sites: Site.publishedSites()
       });
     });
-    this.app.use("/", router);
-    this.app.use("/\\$admin", adminRouter);
+    this.express.use("/", router);
+    this.express.use("/\\$admin", adminRouter);
   }
 
 }
 
-export default new App().app;
+export default new App();

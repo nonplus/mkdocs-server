@@ -1,9 +1,11 @@
 extends page
 
 block content
-  h1.page-header Sites
+  h2.page-header Published Sites
 
   .list-group
     each site in sites
-      a.list-group-item(href='/' + site.name)= site.title
+      a.list-group-item(href='/' + site.name)
+        strong= site.title
+        span.text-muted=" - " + site.siteDescription
 
