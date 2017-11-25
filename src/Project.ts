@@ -45,8 +45,11 @@ interface ProjectConfig {
 
 export default class Project {
 
-  public static resolve(id: string) {
-    const config = db.get("projects").find({id}).value();
+  public static resolve(id: string): Project {
+    const config: ProjectConfig = db
+      .get("projects")
+      .find({id})
+      .value<ProjectConfig>();
     if (config) {
       return new Project(config);
     } else {
@@ -54,16 +57,19 @@ export default class Project {
     }
   }
 
-  public static allProjects() {
-    return db.get("projects").map((config) => new Project(config)).value();
+  public static allProjects(): Project[] {
+    return db
+      .get("projects")
+      .map((config: ProjectConfig) => new Project(config))
+      .value<Project[]>();
   }
 
-  public static publishedProjects() {
+  public static publishedProjects(): Project[] {
     return db
       .get("projects")
       .filter({status: ProjectStatus.docsPublished})
-      .map((config) => new Project(config))
-      .value();
+      .map((config: ProjectConfig) => new Project(config))
+      .value<Project[]>();
   }
 
   public id: string;
@@ -142,7 +148,6 @@ export default class Project {
 
   public async initialize() {
     await this.cloneRepo();
-    this.refreshMkdDocsInfo();
     await this.publishDocs();
   }
 
@@ -219,6 +224,7 @@ export default class Project {
 
     return gitClone
       .then(() => {
+        this.refreshMkdDocsInfo();
         this.update({
           activity: null,
           status: ProjectStatus.repoCloned
@@ -258,6 +264,7 @@ export default class Project {
 
     return gitPull
       .then(() => {
+        this.refreshMkdDocsInfo();
         this.update({
           activity: null
         });
@@ -288,6 +295,7 @@ export default class Project {
           activity: null,
           status: ProjectStatus.docsPublished
         });
+        app.configStaticSites();
       }, (err) => {
         this.update({
           activity: null,
@@ -317,7 +325,6 @@ export default class Project {
         .find({id: this.id})
         .assign({mkdocsConfig, title: mkdocsConfig.site_name || this.title})
         .write();
-      app.configStaticSites();
     } catch (e) {
       console.log(e);
     }
