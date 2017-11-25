@@ -41,6 +41,11 @@ router.post("/new-project", (req, res) => {
   }
 });
 
+router.get("/projects/:id", (req, res) => {
+  const project = Project.resolve(req.params.id);
+  res.render("admin/project", { project });
+});
+
 router.post("/rebuild/:id", (req, res) => {
   const id = req.params.id;
   const project = Project.resolve(id);

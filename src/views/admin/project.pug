@@ -1,0 +1,40 @@
+extends ../page
+
+block content
+    h2.page-header= `Project: ${project.id}`
+
+    form(method="POST")
+        .form-group
+            label(for='repo') Git Repository
+            input#repo.form-control(type='text', name='repo', placeholder='e.g. git@github.com:mkdocs/mkdocs.git', value=project.repo, required)
+
+        hr
+
+        =" "
+        a.btn.btn-command.btn-default(href="/$admin") Cancel
+
+    table.table
+        tbody
+            tr
+                th.shrink Status
+                td= project.statusLabel
+            if project.mkdocsConfig
+                tr
+                    th.shrink MkDocs
+                    td
+                        dl.dl-horizontal
+                            each prop in ["site_name", "site_author", "site_description"]
+                                dt= `${prop}:`
+                                dd= project.mkdocsConfig[prop]
+            if project.activity
+                tr
+                    th.shrink Activity
+                    td= project.activityLabel
+            if project.error
+                tr
+                    th.shrink Error
+                    td
+                        div
+                            b=project.error.message
+                        pre=project.error.log
+

@@ -6,20 +6,22 @@ block content
   table.table.table-condensed
     thead
       tr
-        th Status
-        th ID
+        th.shrink Status
+        th.shrink ID
         th Title
         th
     tbody
       each project in projects
         tr
-          td
+          td.shrink
             =project.statusLabel + " " + project.activityLabel
-            if project.error
-              | ERROR
-          td= project.id
+          td.shrink
+            a(href=`/$admin/projects/${project.id}`)= project.id
+              if project.error
+                =" "
+                span.glyphicon.glyphicon-exclamation-sign.text-danger(aria-hidden='true')
           td= project.title
-          td
+          td.shrink
             form(method="POST", action="/$admin/rebuild/" + project.id)
               input.btn.btn-default.btn-xs(type="submit" value="Rebuild")
 
