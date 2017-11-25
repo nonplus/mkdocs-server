@@ -2,25 +2,24 @@ import * as BPromise from "bluebird";
 import {spawn, SpawnOptions} from "child_process";
 import * as _ from "lodash";
 import * as path from "path";
+import rimraf = require("rimraf");
+import * as YAML from "yamljs";
+
+import app from "./App";
 import db from "./db/db";
 
-import rimraf = require("rimraf");
-import app from "./App";
-
-import YAML = require("yamljs");
-
-enum ProjectStatus {
-  new,
-  repoCloned,
-  docsPublished
+enum ProjectActivity {
+  cloningRepo = "cloning",
+  updatingRepo = "updating",
+  publishingDocs = "publishing",
+  resettingProject = "resetting",
+  deletingProject = "deleting"
 }
 
-enum ProjectActivity {
-  cloningRepo,
-  updatingRepo,
-  publishingDocs,
-  resettingProject,
-  deletingProject
+enum ProjectStatus {
+  new = "new",
+  repoCloned = "cloned",
+  docsPublished = "published"
 }
 
 interface ProjectConfig {
@@ -42,6 +41,8 @@ interface ProjectConfig {
     site_dir?: string;
   };
 }
+
+const reposDirectory = "./data/repos";
 
 export default class Project {
 
@@ -125,7 +126,7 @@ export default class Project {
   }
 
   get repoDirectory(): string {
-    return path.join("repos", this.id);
+    return path.join(reposDirectory, this.id);
   }
 
   get siteDescription(): string {
@@ -133,7 +134,7 @@ export default class Project {
   }
 
   get activityLabel(): string {
-    if (!Boolean(this.activity)) {
+    if (_.isNil(this.activity)) {
       return "";
     }
 
@@ -206,7 +207,7 @@ export default class Project {
 
     function destroy() {
       db.get("projects")
-        .remove({ id })
+        .remove({id})
         .write();
     }
   }
@@ -226,7 +227,7 @@ export default class Project {
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     const gitClone = this.spawn("git", ["clone", "--depth=1", this.repo, this.id], {
-      cwd: "./repos"
+      cwd: reposDirectory
     });
 
     return gitClone
@@ -266,7 +267,7 @@ export default class Project {
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
     const gitPull = this.spawn("git", ["pull", "--depth=1", "-f"], {
-      cwd: `./repos/${this.id}`
+      cwd: this.repoDirectory
     });
 
     return gitPull
@@ -293,7 +294,7 @@ export default class Project {
     this.update({activity: ProjectActivity.publishingDocs, error: null});
 
     const publish = this.spawn("mkdocs", ["build"], {
-      cwd: `./repos/${this.id}`
+      cwd: this.repoDirectory
     });
 
     return publish
@@ -323,7 +324,7 @@ export default class Project {
 
   private refreshMkdDocsInfo() {
     try {
-      const doc = YAML.load(`./repos/${this.id}/mkdocs.yml`);
+      const doc = YAML.load(`${this.repoDirectory}/mkdocs.yml`);
       const mkdocsConfig = _.pick(doc, "site_name", "site_url", "site_description", "site_author", "site_dir");
       if (!mkdocsConfig.site_dir) {
         mkdocsConfig.site_dir = "site";
@@ -357,7 +358,7 @@ export default class Project {
     childProcess.on("close", (code) => {
       console.log(`child process exited with code ${code}`);
       if (code) {
-        const error = new Error();
+        const error: any = new Error();
         error.code = code;
         error.log = log.join();
         dfd.reject(error);
