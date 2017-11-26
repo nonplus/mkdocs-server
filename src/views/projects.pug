@@ -6,7 +6,8 @@ block page-content
     if !usesAuthentication
       a.btn.pull-right.btn-warning(href="/!config/auth") Authentication Not Configured
     else
-      a.btn.btn-link.pull-right(href="/!config") Config
+      a.btn.btn-link.pull-right(href="/!config")
+        span.glyphicon.glyphicon-cog(aria-hidden='true', title="Config")
 
     =siteTitle
 
