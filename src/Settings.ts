@@ -6,6 +6,14 @@ const DEFAULT_SITE_TITLE = "MkDocs Server";
 
 interface ISettings {
   siteTitle?: string;
+  sessionSecret?: string;
+  auth?: any;
+}
+
+interface IAuthGoogle {
+  clientID: string;
+  clientSecret: string;
+  hostedDomain: string;
 }
 
 export enum SettingEvent {
@@ -27,11 +35,28 @@ export default class Settings {
     Settings.events.emit(SettingEvent.updated, settings);
   }
 
+  public static setAuth(method: "google", value: IAuthGoogle);
+  public static setAuth(method: string, value: any) {
+    db.get("settings")
+      .assign({
+        auth: {[method]: value}
+      })
+      .write();
+  }
+
   private constructor(private config: ISettings) {
   }
 
   get siteTitle() {
     return this.config.siteTitle || DEFAULT_SITE_TITLE;
+  }
+
+  get auth() {
+    return this.config.auth || (this.config.auth = {});
+  }
+
+  get sessionSecret() {
+    return this.config.sessionSecret;
   }
 
 }

@@ -1,0 +1,28 @@
+extends ../config-page
+
+block config-content
+
+    h2.page-header Authentication
+
+    form(method="POST")
+        .form-group
+            label(for='authorizedOrigin') Authorized Origin
+            input#authorizedOrigin.form-control(type='text', name='authorizedOrigin', value=authorizedOrigin, readonly)
+        .form-group
+            label(for='callbackUrl') Callback URL
+            input#callbackUrl.form-control(type='text', name='callbackUrl', value=callbackUrl, readonly)
+        .form-group
+            label(for='clientID') Google Client ID
+            input#clientID.form-control(type='text', name='clientID', placeholder='MkDocs Server', value=clientID, required)
+        .form-group
+            label(for='clientSecret') Google Client Secret
+            input#clientSecret.form-control(type='text', name='clientSecret', placeholder='MkDocs Server', value=clientSecret, required)
+        .form-group
+            label(for='hostedDomain') Hosted Domain
+            input#hostedDomain.form-control(type='text', name='hostedDomain', placeholder='my-gsuite-domain.com', value=hostedDomain, required)
+
+        hr
+
+        button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Configuration
+        =" "
+        a.btn.btn-command.btn-default(href="/$config") Cancel
