@@ -15,13 +15,15 @@ block config-content
       each project in projects
         tr
           td.shrink
-            =project.statusLabel + " " + project.activityLabel
+            =project.statusLabel
           td.shrink
             a(href=`/!config/projects/${project.id}`)= project.id
               if project.error
                 =" "
                 span.glyphicon.glyphicon-exclamation-sign.text-danger(aria-hidden='true')
-          td= project.title
+          td
+            small.text-muted.pull-right= project.activityLabel
+            = project.title
           td.shrink
             form(method="POST", action=`/!config/projects/${project.id}/rebuild`)
               input.btn.btn-default.btn-xs(type="submit" value="Rebuild")
