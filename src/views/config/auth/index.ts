@@ -8,7 +8,7 @@ const router = express.Router();
 export default router;
 
 router.use((req, res, next) => {
-  req.breadcrumbs("Authentication", "/$config/auth");
+  req.breadcrumbs("Authentication", "/!config/auth");
   next();
 });
 
@@ -36,5 +36,5 @@ router.post("/", (req, res) => {
       break;
   }
 
-  res.redirect("/$config");
+  res.redirect("/!config");
 });

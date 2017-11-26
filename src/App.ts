@@ -9,7 +9,7 @@ import * as breadcrumbs from "express-breadcrumbs";
 import * as session from "express-session";
 import * as _ from "lodash";
 
-import {authenticated, authRoutes, isAuthenticated} from "./auth/passport";
+import {authRoutes, ensureAuthenticated, isAuthenticated} from "./auth/passport";
 import Project, {ProjectEvent} from "./Project";
 import Settings, {SettingEvent} from "./Settings";
 import configRouter from "./views/config";
@@ -51,7 +51,7 @@ class App {
       .forEach((project) => {
         const siteDirectory = project.siteDirectory;
         console.log("Mapping", `/${project.id}`, "to", siteDirectory);
-        this.express.use(`/${project.id}`, authenticated, express.static(siteDirectory));
+        this.express.use(`/${project.id}`, ensureAuthenticated, express.static(siteDirectory));
       });
   }
 
@@ -106,7 +106,7 @@ class App {
       }
     });
     this.express.use("/", router);
-    this.express.use("/\\$config", authenticated, configRouter);
+    this.express.use("/!config", ensureAuthenticated, configRouter);
   }
 
   private refreshSiteTitle() {

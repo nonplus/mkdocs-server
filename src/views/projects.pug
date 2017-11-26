@@ -4,10 +4,10 @@ block page-content
 
   h2.page-header
     if !usesAuthentication
-      a.btn.pull-right.btn-warning(href="/$config/auth") Authentication Not Configured
+      a.btn.pull-right.btn-warning(href="/!config/auth") Authentication Not Configured
     else
-      a.btn.btn-link.pull-right(href="/!auth/logout") Logout
-    //a.btn.btn-link.pull-right(href="/$config") Config
+      a.btn.btn-link.pull-right(href="/!config") Config
+
     =siteTitle
 
   .list-group
@@ -15,4 +15,3 @@ block page-content
       a.list-group-item(href='/' + project.id)
         strong= project.title
         span.text-muted=" - " + project.siteDescription
-

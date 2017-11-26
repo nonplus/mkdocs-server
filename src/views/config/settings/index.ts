@@ -7,7 +7,7 @@ const router = express.Router();
 export default router;
 
 router.use((req, res, next) => {
-  req.breadcrumbs("Settings", "/$config/settings");
+  req.breadcrumbs("Settings", "/!config/settings");
   next();
 });
 
@@ -28,5 +28,5 @@ router.post("/", (req, res) => {
       break;
   }
 
-  res.redirect("/$config");
+  res.redirect("/!config");
 });

@@ -11,7 +11,7 @@ export default router;
 
 router.use((req: ProjectRequest, res, next) => {
   const project = req.project;
-  req.breadcrumbs(project.title, `/$config/projects/${project.id}`);
+  req.breadcrumbs(project.title, `/!config/projects/${project.id}`);
   next();
 });
 
@@ -58,5 +58,5 @@ router.post("/rebuild", (req: ProjectRequest, res) => {
 });
 
 function goToConfigProjects(res) {
-  res.redirect("/$config/projects");
+  res.redirect("/!config/projects");
 }

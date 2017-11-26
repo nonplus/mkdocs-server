@@ -9,7 +9,7 @@ const router = express.Router();
 export default router;
 
 router.use((req, res, next) => {
-  req.breadcrumbs("Projects", "/$config/projects");
+  req.breadcrumbs("Projects", "/!config/projects");
   next();
 });
 
@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 });
 
 router.use("/new", (req, res, next) => {
-  req.breadcrumbs("Register New Project", "/$config/projects/new");
+  req.breadcrumbs("Register New Project", "/!config/projects/new");
   next();
 });
 
@@ -56,7 +56,7 @@ router.all("/:id*", (req: ProjectRequest, res, next) => {
   console.log("req.params", req.params);
   console.log("project", project);
   if (!project) {
-    res.redirect("/$config/projects");
+    res.redirect("/!config/projects");
   } else {
     req.project = project;
     next();
@@ -66,7 +66,7 @@ router.all("/:id*", (req: ProjectRequest, res, next) => {
 router.use("/:id", projectRouter);
 
 function goToConfigProjects(res) {
-  res.redirect("/$config/projects");
+  res.redirect("/!config/projects");
 }
 
 function renderConfigProjects(req, res, $alert?) {

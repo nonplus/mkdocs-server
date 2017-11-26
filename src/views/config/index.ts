@@ -9,7 +9,7 @@ const router = express.Router();
 export default router;
 
 router.use((req, res, next) => {
-  req.breadcrumbs("Config", "/$config");
+  req.breadcrumbs("Config", "/!config");
   next();
 });
 
