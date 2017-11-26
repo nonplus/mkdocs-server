@@ -8,7 +8,6 @@ import * as express from "express";
 import * as breadcrumbs from "express-breadcrumbs";
 import * as session from "express-session";
 import * as _ from "lodash";
-import * as passport from "passport";
 
 import {authenticated, authRoutes, isAuthenticated} from "./auth/passport";
 import Project, {ProjectEvent} from "./Project";
@@ -68,7 +67,7 @@ class App {
     }
 
     this.router.use(session({
-      secret: "ilovescotchscotchyscotchscotch",
+      secret: settings.sessionSecret,
       resave: false,
       saveUninitialized: true,
       cookie: {
@@ -120,4 +119,3 @@ class App {
 }
 
 export default new App();
-

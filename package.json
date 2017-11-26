@@ -27,6 +27,7 @@
     "@types/node": "7.0.22",
     "@types/passport": "^0.4.1",
     "@types/rimraf": "^2.0.2",
+    "@types/shortid": "0.0.29",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
@@ -41,6 +42,7 @@
     "passport-google-oauth2": "^0.1.6",
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
+    "shortid": "^2.2.8",
     "source-map-support": "^0.5.0",
     "yamljs": "^0.3.0"
   },

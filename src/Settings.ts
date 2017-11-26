@@ -1,5 +1,6 @@
 import {EventEmitter} from "events";
 import * as _ from "lodash";
+import * as shortid from "shortid";
 
 import db from "./db/settings";
 
@@ -69,8 +70,15 @@ export default class Settings {
     return this.config.auth || (this.config.auth = {});
   }
 
-  get sessionSecret() {
-    return this.config.sessionSecret;
+  get sessionSecret(): string {
+    let sessionSecret = this.config.sessionSecret;
+    if (!sessionSecret) {
+      this.config.sessionSecret = sessionSecret = shortid();
+      Settings.update({
+        sessionSecret
+      });
+    }
+    return sessionSecret;
   }
 
 }
