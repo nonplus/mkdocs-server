@@ -1,6 +1,5 @@
 import * as express from "express";
-import * as _ from "lodash";
-import Project from "../../Project";
+import Project from "../../../Project";
 
 export interface ProjectRequest extends express.Request {
   project: Project;
@@ -18,7 +17,7 @@ router.use((req: ProjectRequest, res, next) => {
 
 router.get("/", (req: ProjectRequest, res) => {
   const project = req.project;
-  res.render("config/project", {
+  res.render("config/projects/project", {
     breadcrumbs: req.breadcrumbs,
     project
   });
@@ -43,7 +42,7 @@ router.post("/", (req: ProjectRequest, res) => {
       return;
   }
 
-  res.render("config/project", {
+  res.render("config/projects/project", {
     breadcrumbs: req.breadcrumbs,
     project
   });

@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as _ from "lodash";
 
-import Project from "../../Project";
+import Project from "../../../Project";
 import projectRouter, {ProjectRequest} from "./project";
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.use("/new", (req, res, next) => {
 });
 
 router.get("/new", (req, res) => {
-  res.render("config/new-project", {
+  res.render("config/projects/new-project", {
     breadcrumbs: req.breadcrumbs
   });
 });
@@ -37,7 +37,7 @@ router.post("/new", (req, res) => {
   const existing = Project.resolve(id);
 
   if (existing) {
-    res.render("config/new-project", {
+    res.render("config/projects/new-project", {
       breadcrumbs: req.breadcrumbs,
       repo, id, title, $alert: {
         danger: `The "${id}" ID is already used by the "${existing.title}" project.`
@@ -70,7 +70,7 @@ function goToConfigProjects(res) {
 }
 
 function renderConfigProjects(req, res, $alert?) {
-  res.render("config/projects", {
+  res.render("config/projects/index", {
     breadcrumbs: req.breadcrumbs,
     projects: _.sortBy(Project.allProjects(), (project) => (project.id || "").toLowerCase()),
     $alert

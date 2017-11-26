@@ -1,9 +1,6 @@
 import * as express from "express";
-import * as _ from "lodash";
 
-import Project from "../../Project";
-import Settings from "../../Settings";
-import projectRouter, {ProjectRequest} from "./project";
+import Settings from "../../../Settings";
 
 const router = express.Router();
 
