@@ -24,10 +24,11 @@ function routeAuthGoogle(router: Router, auth) {
   } as any));
 
   router.get("/!auth/google/callback",
-    passport.authenticate("google", {
-      successRedirect: "/",
-      failureRedirect: "/"
-    }));
+    passport.authenticate("google"),
+    (req, res) => {
+      res.redirect(req.session.returnTo || "/");
+      delete req.session.returnTo;
+    });
 }
 
 export function authRoutes(router: Router, auth) {
@@ -53,7 +54,7 @@ export function authRoutes(router: Router, auth) {
 
 }
 
-export function authenticated(req: Express.Request, res, next) {
+export function ensureAuthenticated(req: Express.Request, res, next) {
 
   // if user is authenticated in the session, carry on
   if (isAuthenticated(req)) {
@@ -61,7 +62,8 @@ export function authenticated(req: Express.Request, res, next) {
   }
 
   // if they aren't redirect them to the home page
-  res.redirect("/");
+  req.session.returnTo = req.originalUrl;
+  res.redirect("/!auth/google");
 }
 
 export function isAuthenticated(req: Express.Request) {
