@@ -34,7 +34,8 @@ router.post("/", (req, res) => {
       Settings.setAuth("google", {
         clientID: req.body.clientID,
         clientSecret: req.body.clientSecret,
-        hostedDomain: req.body.hostedDomain
+        hostedDomain: req.body.hostedDomain,
+        callbackUrl: req.body.callbackUrl
       });
 
       const viewData = _.extend({},

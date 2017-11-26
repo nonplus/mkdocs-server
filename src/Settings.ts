@@ -16,6 +16,7 @@ interface IAuthGoogle {
   clientID: string;
   clientSecret: string;
   hostedDomain: string;
+  callbackUrl: string;
 }
 
 export enum SettingEvent {

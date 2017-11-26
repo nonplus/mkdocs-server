@@ -8,7 +8,7 @@ function routeAuthGoogle(router: Router, auth) {
   const config = {
     clientID: auth.google.clientID,
     clientSecret: auth.google.clientSecret,
-    callbackURL: "http://localhost:3000/!auth/google/callback",
+    callbackURL: auth.google.callbackUrl,
     passReqToCallback: true
   };
 
