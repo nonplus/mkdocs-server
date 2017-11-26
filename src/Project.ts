@@ -260,7 +260,6 @@ export default class Project {
   }
 
   public update(options: Partial<ProjectConfig>) {
-    console.log("update", this.id, JSON.stringify(options));
     db.get("projects").find({id: this.id})
       .assign(options)
       .write();

@@ -62,7 +62,9 @@ export function ensureAuthenticated(req: Express.Request, res, next) {
   }
 
   // if they aren't redirect them to the home page
-  req.session.returnTo = req.originalUrl;
+  if (req.session) {
+    req.session.returnTo = req.originalUrl;
+  }
   res.redirect("/!auth/google");
 }
 

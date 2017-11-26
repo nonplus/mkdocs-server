@@ -1,5 +1,6 @@
 html
   head
+    include http-equiv
     link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
     style.
       body { padding: 20px }
@@ -7,6 +8,7 @@ html
       td form { margin-bottom: 0 }
       th.shrink, td.shrink { white-space: nowrap; width: 1% }
     title= title
+
   body
     .container
 
@@ -16,6 +18,8 @@ html
         .alert.alert-danger(role='alert')= $alert.danger
       if $alert && $alert.info
         .alert.alert-info(role='alert')= $alert.info
+      if $alert && $alert.success
+        .alert.alert-success(role='alert')= $alert.success
 
       hr
 

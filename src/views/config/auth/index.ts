@@ -28,12 +28,33 @@ router.get("/", (req, res) => {
 router.post("/", (req, res) => {
   switch (req.body.action) {
     case "update":
+      if (Settings.get().auth.google) {
+        break;
+      }
       Settings.setAuth("google", {
         clientID: req.body.clientID,
         clientSecret: req.body.clientSecret,
         hostedDomain: req.body.hostedDomain
       });
-      break;
+
+      const viewData = _.extend({},
+        req.body,
+        {
+          authorizedOrigin: `${req.protocol}://${req.get("host")}`,
+          callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
+          breadcrumbs: req.breadcrumbs,
+          httpEquiv: {
+            refresh: "10;url=/!config"
+          },
+          $alert: {
+            success: "Authentication settings have been saved and the server is restarting."
+          }
+        }
+      );
+
+      res.render("config/auth", viewData);
+
+      return;
   }
 
   res.redirect("/!config");

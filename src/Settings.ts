@@ -19,7 +19,8 @@ interface IAuthGoogle {
 }
 
 export enum SettingEvent {
-  updated = "updated"
+  updated = "updated",
+  authChanged = "auth-changed"
 }
 
 export default class Settings {
@@ -55,6 +56,7 @@ export default class Settings {
       })
       .write();
     Settings.usesAuth = true;
+    Settings.events.emit(SettingEvent.authChanged);
   }
 
   private static usesAuth = false;

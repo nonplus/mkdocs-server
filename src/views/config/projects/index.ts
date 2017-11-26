@@ -53,8 +53,6 @@ router.post("/new", (req, res) => {
 
 router.all("/:id*", (req: ProjectRequest, res, next) => {
   const project = Project.resolve(req.params.id);
-  console.log("req.params", req.params);
-  console.log("project", project);
   if (!project) {
     res.redirect("/!config/projects");
   } else {
@@ -72,6 +70,9 @@ function goToConfigProjects(res) {
 function renderConfigProjects(req, res, $alert?) {
   res.render("config/projects/index", {
     breadcrumbs: req.breadcrumbs,
+    httpEquiv: {
+      refresh: 5
+    },
     projects: _.sortBy(Project.allProjects(), (project) => (project.id || "").toLowerCase()),
     $alert
   });

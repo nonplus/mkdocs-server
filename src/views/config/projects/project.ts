@@ -27,7 +27,6 @@ router.post("/", (req: ProjectRequest, res) => {
   const project = req.project;
   switch (req.body.action) {
     case "update":
-      console.log("update repo", req.body.repo);
       project.update({
         repo: req.body.repo
       });

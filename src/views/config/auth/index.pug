@@ -13,16 +13,24 @@ block config-content
             input#callbackUrl.form-control(type='text', name='callbackUrl', value=callbackUrl, readonly)
         .form-group
             label(for='clientID') Google Client ID
-            input#clientID.form-control(type='text', name='clientID', placeholder='MkDocs Server', value=clientID, required)
-        .form-group
-            label(for='clientSecret') Google Client Secret
-            input#clientSecret.form-control(type='text', name='clientSecret', placeholder='MkDocs Server', value=clientSecret, required)
+            input#clientID.form-control(type='text', name='clientID', placeholder='MkDocs Server', value=clientID, required, readonly=clientSecret)
+        if !clientSecret
+            .form-group
+                label(for='clientSecret') Google Client Secret
+                input#clientSecret.form-control(type='text', name='clientSecret', placeholder='MkDocs Server', value=clientSecret, required)
         .form-group
             label(for='hostedDomain') Hosted Domain
-            input#hostedDomain.form-control(type='text', name='hostedDomain', placeholder='my-gsuite-domain.com', value=hostedDomain, required)
+            input#hostedDomain.form-control(type='text', name='hostedDomain', placeholder='my-gsuite-domain.com', value=hostedDomain, required, readonly=clientSecret)
+
+        .alert.alert-info
+            p.
+                <b>Note:</b> Once set, authentication settings cannot be changed through the browser.
 
         hr
 
-        button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Configuration
-        =" "
-        a.btn.btn-command.btn-default(href="/!config") Cancel
+        if !clientSecret
+            button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Configuration
+            =" "
+            a.btn.btn-command.btn-default(href="/!config") Cancel
+        else
+            a.btn.btn-command.btn-default(href="/!config") Done

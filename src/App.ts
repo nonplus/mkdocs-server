@@ -2,6 +2,7 @@ import sms = require("source-map-support");
 
 sms.install();
 
+import * as BPromise from "bluebird";
 import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
@@ -9,6 +10,9 @@ import * as breadcrumbs from "express-breadcrumbs";
 import * as session from "express-session";
 import * as _ from "lodash";
 
+import {Application} from "express";
+import * as http from "http";
+import {Server} from "http";
 import {authRoutes, ensureAuthenticated, isAuthenticated} from "./auth/passport";
 import Project, {ProjectEvent} from "./Project";
 import Settings, {SettingEvent} from "./Settings";
@@ -17,33 +21,40 @@ import configRouter from "./views/config";
 declare global {
   namespace Express {
     interface Request {
+      originalUrl?: string;
       breadcrumbs(name: string, url: string): Array<{ name: string; url: string; }>;
     }
   }
 }
 
 class App {
-  public express;
+  public express: Application;
   private router;
+  private port: number;
+  private server: Server;
 
   constructor() {
     Settings.events.on(SettingEvent.updated, () => {
       this.refreshSiteTitle();
     });
 
+    Settings.events.on(SettingEvent.authChanged, () => {
+      console.log("SettingEvent.authChanged");
+      setTimeout(() => this.restart());
+    });
+
     Project.events.on(ProjectEvent.docsPublished, () => {
       this.configStaticSites();
     });
 
-    this.express = express();
-    this.router = express.Router();
+    this.initialize();
+  }
 
-    this.configParsers();
-    this.configPassport();
-    this.configViews();
-    this.mountRoutes();
-    this.refreshSiteTitle();
-    this.configStaticSites();
+  public async listen(port: number) {
+    this.port = port;
+    this.server = http.createServer(this.express);
+    await BPromise.promisify<Server, number>(this.server.listen, {context: this.server})(port);
+    console.log(`MkDocs Service is listening on ${port}`);
   }
 
   public configStaticSites() {
@@ -55,12 +66,30 @@ class App {
       });
   }
 
+  private initialize() {
+    console.log("Initializing...");
+    this.express = express();
+    this.router = express.Router();
+
+    this.configParsers();
+    this.configPassport();
+    this.configViews();
+    this.mountRoutes();
+    this.refreshSiteTitle();
+    this.configStaticSites();
+  }
+
+  private async restart() {
+    console.log("Stopping server...");
+    await BPromise.promisify(this.server.close, {context: this.server})();
+    this.initialize();
+    return this.listen(this.port);
+  }
+
   private configPassport() {
 
     const settings = Settings.get();
     const auth = settings.auth;
-
-    console.log("settings", settings);
 
     if (!auth || !auth.google) {
       return;
