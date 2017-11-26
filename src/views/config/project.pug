@@ -1,6 +1,7 @@
-extends ../page
+extends page
 
-block content
+block config-content
+
     h2.page-header= `Project: ${project.id}`
 
     form(method="POST")
@@ -12,7 +13,7 @@ block content
 
         button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Changes
         =" "
-        a.btn.btn-command.btn-default(href="/$config") Cancel
+        a.btn.btn-command.btn-default(href="/$config/projects") Cancel
         div.pull-right
             button.btn.btn-warning(type="submit" name="action" value="reset") Reset Project
             =" "

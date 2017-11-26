@@ -25,6 +25,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "express": "4.15.3",
+    "express-breadcrumbs": "0.0.2",
     "install": "^0.10.2",
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",

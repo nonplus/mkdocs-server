@@ -1,0 +1,8 @@
+ol.breadcrumb
+    - var _breadcrumbs = breadcrumbs();
+    each breadcrumb, i in _breadcrumbs
+        if (i === _breadcrumbs.length - 1)
+            li.active= breadcrumb.name
+        else
+            li
+                a(href=breadcrumb.url)= breadcrumb.name

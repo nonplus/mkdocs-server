@@ -1,7 +1,10 @@
 extends page
 
-block content
-  h2.page-header Published Sites
+block page-content
+
+  h2.page-header
+    a.btn.btn-link.pull-right(href="/$config") Config
+    | Published Sites
 
   .list-group
     each project in projects

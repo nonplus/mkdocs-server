@@ -9,17 +9,8 @@ html
     title= title
   body
     .container
-      nav.navbar.navbar-default
-        .container-fluid
-          .navbar-header
-            a.navbar-brand(href='/') MkDocs Server
-          #navbar
-            ul.nav.navbar-nav.navbar-right
-              li
-                a(href='/$config') Admin
-              //li
-              //  a(href='/logout') Logout
-      block content
+
+      block page-content
 
       if $alert && $alert.danger
         .alert.alert-danger(role='alert')= $alert.danger

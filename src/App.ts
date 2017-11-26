@@ -4,10 +4,19 @@ sms.install();
 
 import * as bodyParser from "body-parser";
 import * as express from "express";
+import * as breadcrumbs from "express-breadcrumbs";
 import * as _ from "lodash";
 
 import Project from "./Project";
-import adminRouter from "./views/config/routes";
+import adminRouter from "./views/config";
+
+declare global {
+  namespace Express {
+    interface Request {
+      breadcrumbs(name: string, url: string);
+    }
+  }
+}
 
 class App {
   public express;
@@ -40,6 +49,11 @@ class App {
 
   private mountRoutes(): void {
     const router = express.Router();
+    router.use(breadcrumbs.init());
+    router.use(breadcrumbs.setHome({
+      name: "Home",
+      url: "/"
+    }));
     router.get("/", (req, res) => {
       res.render("home", {
         projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
