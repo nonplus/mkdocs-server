@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
     Settings.get().auth.google,
     {
       authorizedOrigin: `${req.protocol}://${req.get("host")}`,
-      callbackUrl: `${req.protocol}://${req.get("host")}/auth/callback/google`,
+      callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
       breadcrumbs: req.breadcrumbs
     }
   );

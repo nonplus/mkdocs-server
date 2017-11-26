@@ -1,0 +1,18 @@
+extends includes/page
+
+block page-content
+
+  h2.page-header
+    if !usesAuthentication
+      a.btn.pull-right.btn-warning(href="/$config/auth") Authentication Not Configured
+    else
+      a.btn.btn-link.pull-right(href="/!auth/logout") Logout
+    //a.btn.btn-link.pull-right(href="/$config") Config
+    =siteTitle
+
+  .list-group
+    each project in projects
+      a.list-group-item(href='/' + project.id)
+        strong= project.title
+        span.text-muted=" - " + project.siteDescription
+

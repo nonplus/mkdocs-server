@@ -3,10 +3,14 @@ import sms = require("source-map-support");
 sms.install();
 
 import * as bodyParser from "body-parser";
+import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as breadcrumbs from "express-breadcrumbs";
+import * as session from "express-session";
 import * as _ from "lodash";
+import * as passport from "passport";
 
+import {authenticated, authRoutes, isAuthenticated} from "./auth/passport";
 import Project, {ProjectEvent} from "./Project";
 import Settings, {SettingEvent} from "./Settings";
 import configRouter from "./views/config";
@@ -33,7 +37,10 @@ class App {
     });
 
     this.express = express();
+    this.router = express.Router();
+
     this.configParsers();
+    this.configPassport();
     this.configViews();
     this.mountRoutes();
     this.refreshSiteTitle();
@@ -45,11 +52,35 @@ class App {
       .forEach((project) => {
         const siteDirectory = project.siteDirectory;
         console.log("Mapping", `/${project.id}`, "to", siteDirectory);
-        this.express.use(`/${project.id}`, express.static(siteDirectory));
+        this.express.use(`/${project.id}`, authenticated, express.static(siteDirectory));
       });
   }
 
+  private configPassport() {
+
+    const settings = Settings.get();
+    const auth = settings.auth;
+
+    console.log("settings", settings);
+
+    if (!auth || !auth.google) {
+      return;
+    }
+
+    this.router.use(session({
+      secret: "ilovescotchscotchyscotchscotch",
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        maxAge: 60000
+      }
+    }));
+
+    authRoutes(this.router, auth);
+  }
+
   private configParsers() {
+    this.express.use(cookieParser());
     this.express.use(bodyParser.urlencoded({extended: false}));
   }
 
@@ -59,16 +90,24 @@ class App {
   }
 
   private mountRoutes(): void {
-    const router = this.router = express.Router();
+    const router = this.router;
     router.use(breadcrumbs.init());
+
     router.get("/", (req, res) => {
-      res.render("home", {
-        siteTitle: Settings.get().siteTitle,
-        projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
-      });
+      if (isAuthenticated(req)) {
+        res.render("projects", {
+          siteTitle: Settings.get().siteTitle,
+          usesAuthentication: Settings.usesAuthentication,
+          projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
+        });
+      } else {
+        res.render("login", {
+          siteTitle: Settings.get().siteTitle,
+        });
+      }
     });
     this.express.use("/", router);
-    this.express.use("/\\$config", configRouter);
+    this.express.use("/\\$config", authenticated, configRouter);
   }
 
   private refreshSiteTitle() {
@@ -81,3 +120,4 @@ class App {
 }
 
 export default new App();
+

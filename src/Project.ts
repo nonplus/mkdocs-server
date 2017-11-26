@@ -6,7 +6,7 @@ import * as path from "path";
 import rimraf = require("rimraf");
 import * as YAML from "yamljs";
 
-import db from "./db/db";
+import db from "./db/projects";
 
 enum ProjectActivity {
   cloningRepo = "cloning",
