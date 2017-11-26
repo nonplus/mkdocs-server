@@ -5,7 +5,7 @@ const adapter = new FileSync("data/db.json");
 const db = new low(adapter);
 
 // Set some defaults
-db.defaults({ projects: [], config: {} })
+db.defaults({ projects: [], settings: {} })
   .write();
 
 export default db;

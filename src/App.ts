@@ -8,12 +8,13 @@ import * as breadcrumbs from "express-breadcrumbs";
 import * as _ from "lodash";
 
 import Project from "./Project";
-import adminRouter from "./views/config";
+import Settings from "./Settings";
+import configRouter from "./views/config";
 
 declare global {
   namespace Express {
     interface Request {
-      breadcrumbs(name: string, url: string);
+      breadcrumbs(name: string, url: string): Array<{ name: string; url: string; }>;
     }
   }
 }
@@ -51,16 +52,17 @@ class App {
     const router = express.Router();
     router.use(breadcrumbs.init());
     router.use(breadcrumbs.setHome({
-      name: "Home",
+      name: Settings.get().siteTitle,
       url: "/"
     }));
     router.get("/", (req, res) => {
       res.render("home", {
+        siteTitle: Settings.get().siteTitle,
         projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
       });
     });
     this.express.use("/", router);
-    this.express.use("/\\$config", adminRouter);
+    this.express.use("/\\$config", configRouter);
   }
 
 }

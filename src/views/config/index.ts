@@ -1,6 +1,7 @@
 import * as express from "express";
 
 import projectsRouter from "./projects";
+import settingsRouter from "./settings";
 
 const router = express.Router();
 
@@ -18,3 +19,4 @@ router.get("/", (req, res) => {
 });
 
 router.use("/projects", projectsRouter);
+router.use("/settings", settingsRouter);

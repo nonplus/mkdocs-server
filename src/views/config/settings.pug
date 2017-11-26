@@ -1,0 +1,16 @@
+extends page
+
+block config-content
+
+    h2.page-header Settings
+
+    form(method="POST")
+        .form-group
+            label(for='siteTitle') Site Title
+            input#siteTitle.form-control(type='text', name='siteTitle', placeholder='MkDocs Server', value=siteTitle)
+
+        hr
+
+        button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save
+        =" "
+        a.btn.btn-command.btn-default(href="/$config") Cancel
