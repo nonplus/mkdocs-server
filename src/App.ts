@@ -7,8 +7,8 @@ import * as express from "express";
 import * as breadcrumbs from "express-breadcrumbs";
 import * as _ from "lodash";
 
-import Project from "./Project";
-import Settings from "./Settings";
+import Project, {ProjectEvent} from "./Project";
+import Settings, {SettingEvent} from "./Settings";
 import configRouter from "./views/config";
 
 declare global {
@@ -21,12 +21,22 @@ declare global {
 
 class App {
   public express;
+  private router;
 
   constructor() {
+    Settings.events.on(SettingEvent.updated, () => {
+      this.refreshSiteTitle();
+    });
+
+    Project.events.on(ProjectEvent.docsPublished, () => {
+      this.configStaticSites();
+    });
+
     this.express = express();
     this.configParsers();
     this.configViews();
     this.mountRoutes();
+    this.refreshSiteTitle();
     this.configStaticSites();
   }
 
@@ -49,12 +59,8 @@ class App {
   }
 
   private mountRoutes(): void {
-    const router = express.Router();
+    const router = this.router = express.Router();
     router.use(breadcrumbs.init());
-    router.use(breadcrumbs.setHome({
-      name: Settings.get().siteTitle,
-      url: "/"
-    }));
     router.get("/", (req, res) => {
       res.render("home", {
         siteTitle: Settings.get().siteTitle,
@@ -63,6 +69,13 @@ class App {
     });
     this.express.use("/", router);
     this.express.use("/\\$config", configRouter);
+  }
+
+  private refreshSiteTitle() {
+    this.router.use(breadcrumbs.setHome({
+      name: Settings.get().siteTitle,
+      url: "/"
+    }));
   }
 
 }

@@ -1,11 +1,11 @@
 import * as BPromise from "bluebird";
 import {spawn, SpawnOptions} from "child_process";
+import {EventEmitter} from "events";
 import * as _ from "lodash";
 import * as path from "path";
 import rimraf = require("rimraf");
 import * as YAML from "yamljs";
 
-import app from "./App";
 import db from "./db/db";
 
 enum ProjectActivity {
@@ -19,6 +19,10 @@ enum ProjectActivity {
 enum ProjectStatus {
   new = "new",
   repoCloned = "cloned",
+  docsPublished = "published"
+}
+
+export enum ProjectEvent {
   docsPublished = "published"
 }
 
@@ -45,6 +49,8 @@ interface ProjectConfig {
 const reposDirectory = "./data/repos";
 
 export default class Project {
+
+  public static readonly events = new EventEmitter();
 
   public static resolve(id: string): Project {
     const config: ProjectConfig = db
@@ -303,7 +309,7 @@ export default class Project {
           activity: null,
           status: ProjectStatus.docsPublished
         });
-        app.configStaticSites();
+        Project.events.emit(ProjectEvent.docsPublished, this);
       }, (err) => {
         this.update({
           activity: null,
