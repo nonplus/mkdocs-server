@@ -1,0 +1,11 @@
+{
+  "excludeFiles": ["node_modules/**"],
+  "requireIdLiteralsBeforeAttributes": true,
+  "requireClassLiteralsBeforeAttributes": true,
+  "disallowClassAttributeWithStaticValue": true,
+  "disallowClassLiteralsBeforeIdLiterals": true,
+  "disallowDuplicateAttributes": true,
+  "requireLowerCaseAttributes": true,
+  "disallowLegacyMixinCall": true,
+  "requireLowerCaseTags": true
+}

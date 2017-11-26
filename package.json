@@ -7,8 +7,10 @@
     "build": "tsc",
     "dev": "tsc --watch & nodemon dist",
     "test": "tsc && mocha dist/**/*.spec.js",
-    "lint": "tslint -p tsconfig.json",
-    "lint-fix": "tslint --fix -p tsconfig.json",
+    "lint": "npm run lint-ts && npm run lint-pug",
+    "lint-ts": "tslint -p tsconfig.json",
+    "lint-pug": "pug-lint -c pug-lint.json src",
+    "lint-ts-fix": "tslint --fix -p tsconfig.json",
     "tsc": "tsc"
   },
   "keywords": [
@@ -39,6 +41,7 @@
     "@types/express": "^4.0.39",
     "@types/mocha": "2.2.41",
     "mocha": "3.4.2",
+    "pug-lint": "^2.5.0",
     "supertest": "3.0.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.1"
