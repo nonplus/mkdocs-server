@@ -8,6 +8,7 @@ import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as breadcrumbs from "express-breadcrumbs";
 import * as session from "express-session";
+import * as httpShutdown from "http-shutdown";
 import * as _ from "lodash";
 
 import {Application} from "express";
@@ -31,7 +32,7 @@ class App {
   public express: Application;
   private router;
   private port: number;
-  private server: Server;
+  private server: Server & { shutdown: (() => void) };
 
   constructor() {
     Settings.events.on(SettingEvent.updated, () => {
@@ -52,7 +53,7 @@ class App {
 
   public async listen(port: number) {
     this.port = port;
-    this.server = http.createServer(this.express);
+    this.server = httpShutdown(http.createServer(this.express));
     await BPromise.promisify<Server, number>(this.server.listen, {context: this.server})(port);
     console.log(`MkDocs Service is listening on ${port}`);
   }
@@ -81,7 +82,7 @@ class App {
 
   private async restart() {
     console.log("Stopping server...");
-    await BPromise.promisify(this.server.close, {context: this.server})();
+    await BPromise.promisify(this.server.shutdown, {context: this.server})();
     this.initialize();
     return this.listen(this.port);
   }

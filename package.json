@@ -34,6 +34,7 @@
     "express": "4.15.3",
     "express-breadcrumbs": "0.0.2",
     "express-session": "^1.15.6",
+    "http-shutdown": "^1.2.0",
     "install": "^0.10.2",
     "lodash": "^4.17.4",
     "lowdb": "^1.0.0",

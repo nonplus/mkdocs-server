@@ -44,7 +44,7 @@ router.post("/", (req, res) => {
           callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
           breadcrumbs: req.breadcrumbs,
           httpEquiv: {
-            refresh: "10;url=/!config"
+            refresh: "2;url=/!config"
           },
           $alert: {
             success: "Authentication settings have been saved and the server is restarting."
