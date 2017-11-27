@@ -7,10 +7,10 @@ import * as bodyParser from "body-parser";
 import * as cookieParser from "cookie-parser";
 import * as express from "express";
 import * as breadcrumbs from "express-breadcrumbs";
-import * as session from "express-session";
 import * as httpShutdown from "http-shutdown";
 import * as _ from "lodash";
 
+import session = require("cookie-session");
 import {Application} from "express";
 import * as http from "http";
 import {Server} from "http";
@@ -23,6 +23,7 @@ declare global {
   namespace Express {
     interface Request {
       originalUrl?: string;
+
       breadcrumbs(name: string, url: string): Array<{ name: string; url: string; }>;
     }
   }
@@ -97,12 +98,9 @@ class App {
     }
 
     this.router.use(session({
+      name: "session",
       secret: settings.sessionSecret,
-      resave: false,
-      saveUninitialized: true,
-      cookie: {
-        maxAge: 60000
-      }
+      maxAge: 60000
     }));
 
     authRoutes(this.router, auth);

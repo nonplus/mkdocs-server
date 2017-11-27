@@ -21,6 +21,7 @@
   "dependencies": {
     "@types/bluebird": "^3.5.18",
     "@types/cookie-parser": "^1.4.1",
+    "@types/cookie-session": "^2.0.34",
     "@types/express-session": "^1.15.6",
     "@types/lodash": "^4.14.85",
     "@types/lowdb": "^0.15.0",
@@ -31,9 +32,9 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
+    "cookie-session": "^2.0.0-beta.3",
     "express": "4.15.3",
     "express-breadcrumbs": "0.0.2",
-    "express-session": "^1.15.6",
     "http-shutdown": "^1.2.0",
     "install": "^0.10.2",
     "lodash": "^4.17.4",
