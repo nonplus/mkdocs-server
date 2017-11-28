@@ -1,10 +1,11 @@
 {
   "name": "mkdocs-server",
-  "version": "1.0.0",
-  "description": "Web server for building and serving MkDocs from Git Repos",
+  "version": "0",
+  "description": "Web server for building MkDocs from Git Repos and hosting generated sites for authenticated users",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "serve": "NODE_ENV=production node dist",
     "dev": "tsc --watch & nodemon dist",
     "test": "tsc && mocha dist/**/*.spec.js",
     "lint": "npm run lint-ts && npm run lint-pug",
