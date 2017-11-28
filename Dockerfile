@@ -1,8 +1,10 @@
 FROM alpine:3.6
 
-WORKDIR /mkdocs-server
+# Configure volume and directories
+RUN mkdir /mkdocs-server /mkdocs-server/data /mkdocs-server/data/repos
+VOLUME /mkdocs-server/data
 
-RUN mkdir data data/repos
+WORKDIR /mkdocs-server
 
 RUN apk add --update git nodejs nodejs-npm python py-pip openssh
 
