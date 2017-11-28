@@ -36,10 +36,6 @@ class App {
   private server: Server & { shutdown: (() => void) };
 
   constructor() {
-    Settings.events.on(SettingEvent.updated, () => {
-      this.refreshSiteTitle();
-    });
-
     Settings.events.on(SettingEvent.authChanged, () => {
       console.log("SettingEvent.authChanged");
       setTimeout(() => this.restart());
@@ -59,7 +55,7 @@ class App {
     console.log(`MkDocs Service is listening on ${port}`);
   }
 
-  public configStaticSites() {
+  private configStaticSites() {
     Project.publishedProjects()
       .forEach((project) => {
         const siteDirectory = project.siteDirectory;
@@ -77,7 +73,6 @@ class App {
     this.configPassport();
     this.configViews();
     this.mountRoutes();
-    this.refreshSiteTitle();
     this.configStaticSites();
   }
 
@@ -119,7 +114,7 @@ class App {
   private mountRoutes(): void {
     const router = this.router;
     router.use(breadcrumbs.init());
-
+    router.use(breadcrumbs.setHome());
     router.get("/", (req, res) => {
       if (isAuthenticated(req)) {
         res.render("projects", {
@@ -135,13 +130,6 @@ class App {
     });
     this.express.use("/", router);
     this.express.use("/!config", ensureAuthenticated, configRouter);
-  }
-
-  private refreshSiteTitle() {
-    this.router.use(breadcrumbs.setHome({
-      name: Settings.get().siteTitle,
-      url: "/"
-    }));
   }
 
 }
