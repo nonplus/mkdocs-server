@@ -1,0 +1,17 @@
+# List of Python packages installed into Docker container
+
+# If the site you're trying to build depends on additional themes or extensions, add them to this list.
+
+# MkDocs Application
+
+mkdocs
+
+# Some popular templates
+
+mkdocs-bootswatch
+mkdocs-material
+mkdocs-cinder
+
+# Some popular extensions
+
+pymdown-extensions

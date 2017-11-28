@@ -9,7 +9,7 @@ GitHub Pages offer a great way to manage publicly accessible project documentati
 
 However, there isn't an easy way to restrict access to GitHub Pages documentation.
 
-The MkDocs Server can automatically build [MkDocs](http://www.mkdocs.org/) sites from remote Git repos
+The MkDocs Server can automatically build [MkDocs](http://www.mkdocs.org/) sites from remote Git repositories
 and restrict access to the generated sites to authenticated users.
 
 ## Caveats
@@ -19,12 +19,23 @@ This project is currently under development and functionality is limited to the 
 1. Only supports Google Authentication (can add others in the future)
 1. Only clones repos that don't require credentials (i.e. you have manually create/configure deploy keys)
 1. No user documentaion (ironic, I know...)
-1. Docker support not yet implemented
+
+## Running in a Docker Container
+
+The server can be run as a docker container with the server listening on port `3001`.
+The server stores its data at the `/mkdocs-server/data`.
+
+```bash
+docker build -t mkdocs-server .
+docker run -p 3001:3001 mkdocs-server
+```
 
 ## Prerequisites
 
-* A current version of Node for running mkdocs-server
+To run the server on your development machine, you'll need the following:
+
 * Properly [installed MkDocs](http://www.mkdocs.org/#installation)
+* A current version of Node for running mkdocs-server
 
 ### Installation
 
