@@ -2,6 +2,14 @@
   "name": "mkdocs-server",
   "version": "0.0.0",
   "description": "Web server for building MkDocs from Git Repos and hosting generated sites for authenticated users",
+  "homepage": "https://github.com/nonplus/mkdocs-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nonplus/mkdocs-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nonplus/mkdocs-server/issues"
+  },
   "main": "index.js",
   "scripts": {
     "build": "tsc",
