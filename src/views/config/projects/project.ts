@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as _ from "lodash";
 import Project from "../../../Project";
 
 export interface ProjectRequest extends express.Request {
@@ -32,11 +33,15 @@ router.post("/", (req: ProjectRequest, res) => {
       });
     // Fall through
     case "reset":
-      project.resetProject();
+      project
+        .resetProject()
+        .then(_.noop);
       goToConfigProjects(res);
       return;
     case "delete":
-      project.deleteProject();
+      project
+        .deleteProject()
+        .then(_.noop);
       goToConfigProjects(res);
       return;
   }
@@ -50,7 +55,8 @@ router.post("/", (req: ProjectRequest, res) => {
 router.post("/rebuild", (req: ProjectRequest, res) => {
   const project = req.project;
 
-  project.rebuild()
+  project
+    .rebuild()
     .then(() => console.log("Rebuild finished!"), (err) => console.error("Rebuild failed", err));
 
   goToConfigProjects(res);

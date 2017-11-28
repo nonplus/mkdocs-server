@@ -174,24 +174,24 @@ export default class Project {
 
     const repoDirectory = this.repoDirectory;
 
-    const promise = this.deleteRepo();
-
-    promise.then(
-      () => this.update({
+    try {
+      await this.deleteRepo();
+      this.update({
         mkdocsConfig: null,
         activity: null
-      }),
-      (err) => this.update({
+      });
+    } catch (err) {
+      this.update({
         mkdocsConfig: null,
         activity: null,
         error: {
           message: `Failed deleting ${repoDirectory}`,
           log: err.toString()
         }
-      })
-    );
+      });
 
-    return promise;
+      throw err;
+    }
   }
 
   public async deleteProject() {
@@ -232,27 +232,27 @@ export default class Project {
 
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
-    const gitClone = this.spawn("git", ["clone", "--depth=1", this.repo, this.id], {
-      cwd: reposDirectory
-    });
-
-    return gitClone
-      .then(() => {
-        this.refreshMkdDocsInfo();
-        this.update({
-          activity: null,
-          status: ProjectStatus.repoCloned
-        });
-      }, (err) => {
-        this.update({
-          activity: null,
-          error: {
-            message: "Failed cloning repo",
-            code: err.code,
-            log: err.log
-          }
-        });
+    try {
+      await this.spawn("git", ["clone", "--depth=1", this.repo, this.id], {
+        cwd: reposDirectory
       });
+      this.refreshMkdDocsInfo();
+      this.update({
+        activity: null,
+        status: ProjectStatus.repoCloned
+      });
+    } catch (err) {
+      this.update({
+        activity: null,
+        error: {
+          message: "Failed cloning repo",
+          code: err.code,
+          log: err.log
+        }
+      });
+
+      throw err;
+    }
   }
 
   public resolve() {
@@ -260,6 +260,7 @@ export default class Project {
   }
 
   public update(options: Partial<ProjectConfig>) {
+    console.log("update", JSON.stringify(options));
     db.get("projects").find({id: this.id})
       .assign(options)
       .write();
@@ -271,26 +272,26 @@ export default class Project {
 
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
-    const gitPull = this.spawn("git", ["pull", "--depth=1", "-f"], {
-      cwd: this.repoDirectory
-    });
-
-    return gitPull
-      .then(() => {
-        this.refreshMkdDocsInfo();
-        this.update({
-          activity: null
-        });
-      }, (err) => {
-        this.update({
-          activity: null,
-          error: {
-            message: "Failed updating repo",
-            code: err.code,
-            log: err.log
-          }
-        });
+    try {
+      await this.spawn("git", ["pull", "--depth=1", "-f"], {
+        cwd: this.repoDirectory
       });
+      this.refreshMkdDocsInfo();
+      this.update({
+        activity: null
+      });
+    } catch (err) {
+      this.update({
+        activity: null,
+        error: {
+          message: "Failed updating repo",
+          code: err.code,
+          log: err.log
+        }
+      });
+
+      throw err;
+    }
   }
 
   public async publishDocs() {
@@ -298,27 +299,27 @@ export default class Project {
 
     this.update({activity: ProjectActivity.publishingDocs, error: null});
 
-    const publish = this.spawn("mkdocs", ["build"], {
-      cwd: this.repoDirectory
-    });
-
-    return publish
-      .then(() => {
-        this.update({
-          activity: null,
-          status: ProjectStatus.docsPublished
-        });
-        Project.events.emit(ProjectEvent.docsPublished, this);
-      }, (err) => {
-        this.update({
-          activity: null,
-          error: {
-            message: "Failed publishing docs",
-            code: err.code,
-            log: err.log
-          }
-        });
+    try {
+      await this.spawn("mkdocs", ["build"], {
+        cwd: this.repoDirectory
       });
+      this.update({
+        activity: null,
+        status: ProjectStatus.docsPublished
+      });
+      Project.events.emit(ProjectEvent.docsPublished, this);
+    } catch (err) {
+      this.update({
+        activity: null,
+        error: {
+          message: "Failed publishing docs",
+          code: err.code,
+          log: err.log
+        }
+      });
+
+      throw err;
+    }
 
   }
 
@@ -365,7 +366,7 @@ export default class Project {
       if (code) {
         const error: any = new Error();
         error.code = code;
-        error.log = log.join();
+        error.log = log.join("");
         dfd.reject(error);
       } else {
         dfd.resolve({

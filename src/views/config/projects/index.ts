@@ -46,8 +46,10 @@ router.post("/new", (req, res) => {
   } else {
     Project.add({repo, id, title});
     goToConfigProjects(res);
+
     Project.resolve(id)
-      .initialize();
+      .initialize()
+      .catch(_.noop);
   }
 });
 
