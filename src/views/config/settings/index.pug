@@ -9,6 +9,10 @@ block config-content
             label(for='siteTitle') Site Title
             input#siteTitle.form-control(type='text', name='siteTitle', placeholder='MkDocs Server', value=siteTitle)
 
+        .form-group
+            label(for='admins') Administrators
+            input#admins.form-control(type='text', name='admins', placeholder='E.g. alice@example.com, bob@example.com' + (user ? ", " + user.email : ""), value=admins)
+
         hr
 
         button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save

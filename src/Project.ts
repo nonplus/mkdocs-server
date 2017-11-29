@@ -273,7 +273,8 @@ export default class Project {
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
     try {
-      await this.spawn("git", ["pull", "--depth=1", "-f"], {
+      await this.spawn("git", ["pull", "--depth=1", "-f", "-s", "recursive", "-X", "theirs",
+        "--allow-unrelated-histories"], {
         cwd: this.repoDirectory
       });
       this.refreshMkdDocsInfo();

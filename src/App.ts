@@ -120,6 +120,7 @@ class App {
         res.render("projects", {
           siteTitle: Settings.get().siteTitle,
           usesAuthentication: Settings.usesAuthentication,
+          canAdmin: canAdmin(req.user),
           projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
         });
       } else {
@@ -129,9 +130,21 @@ class App {
       }
     });
     this.express.use("/", router);
-    this.express.use("/!config", ensureAuthenticated, configRouter);
+    this.express.use("/!config", ensureAuthenticated, ensureAdmin, configRouter);
   }
 
 }
 
 export default new App();
+
+function canAdmin(user) {
+  return !user || Settings.canAdmin(user.email);
+}
+
+function ensureAdmin(req, res, next) {
+  if (canAdmin(req.user)) {
+    next();
+  } else {
+    res.redirect("/");
+  }
+}

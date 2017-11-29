@@ -3,6 +3,7 @@ import * as passport from "passport";
 import {Strategy as GoogleStrategy} from "passport-google-oauth2";
 
 import Settings from "../Settings";
+import User from "../User";
 
 function routeAuthGoogle(router: Router, auth) {
   const config = {
@@ -14,13 +15,18 @@ function routeAuthGoogle(router: Router, auth) {
 
   passport.use(new GoogleStrategy(config,
     (request, accessToken, refreshToken, profile, done) => {
-      done(null, {id: profile.id, displayName: profile.displayName});
+      done(null, {
+        provider: profile.provider,
+        id: profile.id,
+        email: profile.email,
+        name: profile.displayName
+      });
     }
   ));
 
   router.get("/!auth/google", passport.authenticate("google", {
     hd: auth.google.hostedDomain,
-    scope: ["profile"]
+    scope: ["profile", "email"]
   } as any));
 
   router.get("/!auth/google/callback",
@@ -33,11 +39,18 @@ function routeAuthGoogle(router: Router, auth) {
 
 export function authRoutes(router: Router, auth) {
   passport.serializeUser((user: any, done) => {
+    const existingUser = User.resolve(user.id);
+    if (!existingUser) {
+      User.add(user);
+    } else {
+      existingUser.update(user);
+    }
     done(null, user.id);
   });
 
-  passport.deserializeUser((id, done) => {
-    done(null, {id});
+  passport.deserializeUser((id: string, done) => {
+    const user = User.resolve(id);
+    done(null, user);
   });
 
   router.use(passport.initialize());

@@ -10,6 +10,7 @@ interface ISettings {
   siteTitle?: string;
   sessionSecret?: string;
   auth?: any;
+  admins?: string[];
 }
 
 interface IAuthGoogle {
@@ -36,7 +37,23 @@ export default class Settings {
     return new Settings(db.get("settings").value());
   }
 
+  public static canAdmin(email: string) {
+    const admins = Settings.get().admins;
+    return _.isEmpty(admins) || _.includes(admins, email);
+  }
+
   public static update(settings: Partial<ISettings>) {
+    settings = _.extend({}, settings);
+
+    if (settings.admins) {
+      settings.admins = _.chain(settings.admins)
+        .map(_.trim)
+        .map((email: string) => email.toLowerCase())
+        .filter((email: string) => Boolean(email))
+        .uniq()
+        .value() as any;
+    }
+
     const dbSettings = db.get("settings")
       .assign(settings);
     Settings.usesAuth = _.get(dbSettings.value(), "auth.google");
@@ -82,6 +99,10 @@ export default class Settings {
       });
     }
     return sessionSecret;
+  }
+
+  get admins(): string[] {
+    return this.config.admins || [];
   }
 
 }
