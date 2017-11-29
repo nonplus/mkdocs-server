@@ -25,6 +25,14 @@ This project is currently under development and functionality is limited to the 
 The server can be run as a docker container with the server listening on port `3001`.
 Configuration, cloned repos and generated sites are stored at `/mkdocs-server/data`.
 
+You can run the server using [Docker Compose](https://docs.docker.com/compose/):
+
+```bash
+docker-compose up
+```
+
+Or you use the usual docker commands:
+
 ```bash
 # Create volume to persist data
 docker volume create mkdocs-server-data

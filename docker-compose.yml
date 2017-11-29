@@ -1,0 +1,10 @@
+version: '3'
+services:
+  mkdocs-server:
+    build: .
+    ports:
+     - "3001:3001"
+    volumes:
+      - mkdocs-server-data:/mkdocs-server/data
+volumes:
+  mkdocs-server-data:
