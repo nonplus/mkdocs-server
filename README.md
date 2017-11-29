@@ -20,6 +20,16 @@ This project is currently under development and functionality is limited to the 
 1. Only clones repos that don't require credentials (i.e. you have manually create/configure deploy keys)
 1. No user documentaion (ironic, I know...)
 
+### Roadmap
+
+- [ ] Support Deploy Keys for Git Repos
+- [ ] Support non-root mkdocs.yaml
+- [ ] Refactor authentication
+- [ ] Add support for Microsoft Login
+- [ ] Add support for GitHub Login
+- [ ] Add support for Slack login
+- [ ] Write documentation
+
 ## Running in a Docker Container
 
 The server can be run as a docker container with the server listening on port `3001`.
