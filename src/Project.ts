@@ -1,5 +1,4 @@
 import * as BPromise from "bluebird";
-import {spawn, SpawnOptions} from "child_process";
 import {EventEmitter} from "events";
 import * as _ from "lodash";
 import * as path from "path";
@@ -7,6 +6,7 @@ import rimraf = require("rimraf");
 import * as YAML from "yamljs";
 
 import db from "./db/projects";
+import {spawnp} from "./utils";
 
 enum ProjectActivity {
   cloningRepo = "cloning",
@@ -30,6 +30,7 @@ interface ProjectConfig {
   id: string;
   title: string;
   repo: string;
+  deployKey?: string;
   status: ProjectStatus | null;
   activity: ProjectActivity | null;
   error: {
@@ -46,7 +47,8 @@ interface ProjectConfig {
   };
 }
 
-const reposDirectory = "./data/repos";
+const dataDirectory = "./data";
+const reposDirectory = `${dataDirectory}/repos`;
 
 export default class Project {
 
@@ -89,6 +91,7 @@ export default class Project {
   public id: string;
   public title: string;
   public repo: string;
+  public deployKey: string;
   public status: ProjectStatus;
   public activity: ProjectActivity | null;
   public error: {
@@ -108,6 +111,7 @@ export default class Project {
     this.id = config.id;
     this.title = config.title;
     this.repo = config.repo;
+    this.deployKey = config.deployKey;
     this.error = config.error;
     this.activity = config.activity || null;
     this.mkdocsConfig = config.mkdocsConfig;
@@ -233,7 +237,7 @@ export default class Project {
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     try {
-      await this.spawn("git", ["clone", "--depth=1", this.repo, this.id], {
+      await spawnp("git", ["clone", "--depth=1", this.repo, this.id], {
         cwd: reposDirectory
       });
       this.refreshMkdDocsInfo();
@@ -273,7 +277,7 @@ export default class Project {
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
     try {
-      await this.spawn("git", ["pull", "--depth=1", "-f", "-s", "recursive", "-X", "theirs",
+      await spawnp("git", ["pull", "--depth=1", "-f", "-s", "recursive", "-X", "theirs",
         "--allow-unrelated-histories"], {
         cwd: this.repoDirectory
       });
@@ -301,7 +305,7 @@ export default class Project {
     this.update({activity: ProjectActivity.publishingDocs, error: null});
 
     try {
-      await this.spawn("mkdocs", ["build"], {
+      await spawnp("mkdocs", ["build"], {
         cwd: this.repoDirectory
       });
       this.update({
@@ -343,40 +347,6 @@ export default class Project {
     } catch (e) {
       console.log(e);
     }
-  }
-
-  private async spawn(command: string, args?: string[], options?: SpawnOptions) {
-    const dfd = BPromise.defer();
-
-    const childProcess = spawn(command, args, options);
-
-    const log = [];
-
-    childProcess.stdout.on("data", (data) => {
-      log.push(data);
-      console.log(`stdout: ${data}`);
-    });
-
-    childProcess.stderr.on("data", (data) => {
-      log.push(data);
-      console.log(`stderr: ${data}`);
-    });
-
-    childProcess.on("close", (code) => {
-      console.log(`child process exited with code ${code}`);
-      if (code) {
-        const error: any = new Error();
-        error.code = code;
-        error.log = log.join("");
-        dfd.reject(error);
-      } else {
-        dfd.resolve({
-          log: log.join()
-        });
-      }
-    });
-
-    return dfd.promise;
   }
 
 }
