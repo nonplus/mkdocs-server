@@ -1,6 +1,9 @@
 import * as express from "express";
 import * as _ from "lodash";
+import DeployKey from "../../../DeployKey";
 import Project from "../../../Project";
+import Settings from "../../../Settings";
+import {AlertMessages} from "../../includes/AlertMessages";
 
 export interface ProjectRequest extends express.Request {
   project: Project;
@@ -17,11 +20,7 @@ router.use((req: ProjectRequest, res, next) => {
 });
 
 router.get("/", (req: ProjectRequest, res) => {
-  const project = req.project;
-  res.render("config/projects/project", {
-    breadcrumbs: req.breadcrumbs,
-    project
-  });
+  renderProject(req, res);
 });
 
 router.post("/", (req: ProjectRequest, res) => {
@@ -44,12 +43,17 @@ router.post("/", (req: ProjectRequest, res) => {
         .then(_.noop);
       goToConfigProjects(res);
       return;
+    case "deployKey":
+      const $alert: AlertMessages = {};
+      const siteTitle = Settings.get().siteTitle;
+      const comment = `MkDocs Server (${req.hostname})`;
+      project.deployKey.generate(comment)
+        .catch((err) => $alert.danger = err.toString())
+        .then(() => renderProject(req, res, {$alert}));
+      return;
   }
 
-  res.render("config/projects/project", {
-    breadcrumbs: req.breadcrumbs,
-    project
-  });
+  renderProject(req, res);
 });
 
 router.post("/rebuild", (req: ProjectRequest, res) => {
@@ -64,4 +68,15 @@ router.post("/rebuild", (req: ProjectRequest, res) => {
 
 function goToConfigProjects(res) {
   res.redirect("/!config/projects");
+}
+
+function renderProject(req: ProjectRequest, res, data?: any) {
+  const project = req.project;
+  const deployKey = project.deployKey;
+  console.log("deployKey.exists", deployKey.exists);
+  res.render("config/projects/project", _.extend({
+    breadcrumbs: req.breadcrumbs,
+    project,
+    deployKey: deployKey.exists ? deployKey.publicKey : ""
+  }, data));
 }

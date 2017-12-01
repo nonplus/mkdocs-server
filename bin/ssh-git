@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ $# -le 2 ] ; then
+  echo "Usage: ssh-git keyfile command [arg1 arg2 ... argN]"
+  echo "Password from \$SSH_PASS_PHRASE"
+  exit 1
+fi
+
+eval $(ssh-agent)
+
+expect << EOF
+  spawn ssh-add $1
+  expect "Enter passphrase"
+  send "$SSH_PASS_PHRASE\r"
+  expect eof
+EOF
+
+shift
+
+git "$@"

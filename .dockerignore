@@ -9,3 +9,5 @@ data
 dist
 *.log
 **/node_modules
+Dockerfile
+docker-compose.yml

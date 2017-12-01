@@ -9,6 +9,7 @@ const DEFAULT_SITE_TITLE = "MkDocs Server";
 interface ISettings {
   siteTitle?: string;
   sessionSecret?: string;
+  sshPassPhrase?: string;
   auth?: any;
   admins?: string[];
 }
@@ -94,11 +95,18 @@ export default class Settings {
     let sessionSecret = this.config.sessionSecret;
     if (!sessionSecret) {
       this.config.sessionSecret = sessionSecret = shortid();
-      Settings.update({
-        sessionSecret
-      });
+      Settings.update({sessionSecret});
     }
     return sessionSecret;
+  }
+
+  get sshPassPhrase(): string {
+    let sshPassPhrase = this.config.sshPassPhrase;
+    if (!sshPassPhrase) {
+      this.config.sshPassPhrase = sshPassPhrase = `${shortid()}${shortid()}${shortid()}`;
+      Settings.update({sshPassPhrase});
+    }
+    return sshPassPhrase;
   }
 
   get admins(): string[] {

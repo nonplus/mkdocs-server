@@ -1,12 +1,14 @@
-FROM alpine:3.6
+FROM node:9.2.0-alpine
 
 # Configure volume and directories
-RUN mkdir /mkdocs-server /mkdocs-server/data /mkdocs-server/data/repos
+RUN mkdir /mkdocs-server /mkdocs-server/data /mkdocs-server/data/repos /mkdocs-server/data/.ssh \
+    && chown -R node:node /mkdocs-server
+
 VOLUME /mkdocs-server/data
 
 WORKDIR /mkdocs-server
 
-RUN apk add --update git nodejs nodejs-npm python py-pip openssh
+RUN apk add --update git python py-pip openssh expect
 
 # Only needed for debugging...
 RUN apk add --update bash
@@ -24,9 +26,12 @@ COPY . .
 RUN npm run build
 
 # Install Python packages
-COPY mkdocs-packages.txt .
 RUN pip install -r mkdocs-packages.txt
 
+RUN chown -R node:node /mkdocs-server
+
 ENV NODE_ENV PRODUCTION
+
+USER node
 
 CMD ["node", "dist/"]

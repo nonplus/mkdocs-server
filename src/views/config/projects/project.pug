@@ -8,6 +8,26 @@ block config-content
         .form-group
             label(for='repo') Git Repository
             input#repo.form-control(type='text', name='repo', placeholder='e.g. git@github.com:mkdocs/mkdocs.git', value=project.repo, required)
+        .form-group
+            label Deploy Key
+            p.
+                A deploy key is an SSH key that is stored on the MkDocs Server and grants access to a remote repository.
+
+            p
+                if deployKey
+                    textarea#deployKey.form-control(type='text', name='deployKey', style="height: 10em", readonly=)= deployKey
+                else
+                    button#deployKey.btn.btn-command.btn-default(type="submit" name="action" value="deployKey") Generate Deploy Key
+
+            p.
+                You'll need to install the generated key on your git server with <b>read</b> access:
+            ul
+                li
+                    a(href="https://confluence.atlassian.com/bitbucket/use-access-keys-294486051.html") BitBucket instructions
+                li
+                    a(href="https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys") GitHub instructions
+                li
+                    a(href="https://docs.gitlab.com/ce/ssh/README.html#deploy-keys") GitLab instructions
 
         hr
 

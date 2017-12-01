@@ -5,8 +5,10 @@ import * as path from "path";
 import rimraf = require("rimraf");
 import * as YAML from "yamljs";
 
+import {DataDir} from "./config";
 import db from "./db/projects";
-import {spawnp} from "./utils";
+import DeployKey from "./DeployKey";
+import {git, spawnp} from "./utils";
 
 enum ProjectActivity {
   cloningRepo = "cloning",
@@ -30,7 +32,6 @@ interface ProjectConfig {
   id: string;
   title: string;
   repo: string;
-  deployKey?: string;
   status: ProjectStatus | null;
   activity: ProjectActivity | null;
   error: {
@@ -47,8 +48,7 @@ interface ProjectConfig {
   };
 }
 
-const dataDirectory = "./data";
-const reposDirectory = `${dataDirectory}/repos`;
+const reposDirectory = `${DataDir}/repos`;
 
 export default class Project {
 
@@ -91,7 +91,6 @@ export default class Project {
   public id: string;
   public title: string;
   public repo: string;
-  public deployKey: string;
   public status: ProjectStatus;
   public activity: ProjectActivity | null;
   public error: {
@@ -111,7 +110,6 @@ export default class Project {
     this.id = config.id;
     this.title = config.title;
     this.repo = config.repo;
-    this.deployKey = config.deployKey;
     this.error = config.error;
     this.activity = config.activity || null;
     this.mkdocsConfig = config.mkdocsConfig;
@@ -162,6 +160,10 @@ export default class Project {
     }
 
     return `Unknown ${this.activity}...`;
+  }
+
+  public get deployKey(): DeployKey {
+    return new DeployKey(this.id);
   }
 
   public async initialize() {
@@ -237,7 +239,7 @@ export default class Project {
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     try {
-      await spawnp("git", ["clone", "--depth=1", this.repo, this.id], {
+      await git(this, ["clone", "--depth=1", this.repo, this.id], {
         cwd: reposDirectory
       });
       this.refreshMkdDocsInfo();
@@ -277,8 +279,7 @@ export default class Project {
     this.update({activity: ProjectActivity.updatingRepo, error: null});
 
     try {
-      await spawnp("git", ["pull", "--depth=1", "-f", "-s", "recursive", "-X", "theirs",
-        "--allow-unrelated-histories"], {
+      await git(this, ["pull", "--depth=1", "-f", "-s", "recursive", "-X", "theirs"], {
         cwd: this.repoDirectory
       });
       this.refreshMkdDocsInfo();

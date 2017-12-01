@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ $# -ne 1 ] ; then
+  echo "Usage: ssh-trust-host host"
+  exit 1
+fi
+
+if [[ $(ssh-keygen -F $1) == '' ]] ; then
+    echo "Trusting host [$1]..."
+    mkdir -p ~/.ssh
+    ssh-keyscan $1 >> ~/.ssh/known_hosts
+fi
