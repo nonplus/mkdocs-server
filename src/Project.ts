@@ -32,6 +32,7 @@ interface ProjectConfig {
   id: string;
   title: string;
   repo: string;
+  branch: string;
   status: ProjectStatus | null;
   activity: ProjectActivity | null;
   error: {
@@ -91,6 +92,7 @@ export default class Project {
   public id: string;
   public title: string;
   public repo: string;
+  public branch: string;
   public status: ProjectStatus;
   public activity: ProjectActivity | null;
   public error: {
@@ -110,6 +112,7 @@ export default class Project {
     this.id = config.id;
     this.title = config.title;
     this.repo = config.repo;
+    this.branch = config.branch;
     this.error = config.error;
     this.activity = config.activity || null;
     this.mkdocsConfig = config.mkdocsConfig;
@@ -239,7 +242,16 @@ export default class Project {
     this.update({activity: ProjectActivity.cloningRepo, error: null});
 
     try {
-      await git(this, ["clone", "--depth=1", this.repo, this.id], {
+      const command = ["clone", "--depth=1"];
+
+      if (this.branch) {
+        command.push("--branch");
+        command.push(this.branch);
+      }
+      command.push(this.repo);
+      command.push(this.id);
+
+      await git(this, command, {
         cwd: reposDirectory
       });
       this.refreshMkdDocsInfo();

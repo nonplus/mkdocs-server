@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
   renderConfigProjects(req, res);
 });
 
-router.use("/new", (req, res, next) => {
+router.all("/new", (req, res, next) => {
   req.breadcrumbs("Register New Project", "/!config/projects/new");
   next();
 });
@@ -30,9 +30,10 @@ router.get("/new", (req, res) => {
 });
 
 router.post("/new", (req, res) => {
-  const {repo, id, title} = req.body;
+  const {repo, id, title, branch} = req.body;
   console.log({repo, id, title});
 
+  console.log("POST /new");
   // TODO: Sanitize repo
 
   const existing = Project.resolve(id);
@@ -46,7 +47,8 @@ router.post("/new", (req, res) => {
       }
     });
   } else {
-    Project.add({repo, id, title});
+    Project.add({repo, id, title, branch});
+
     goToConfigProjects(res);
 
     Project.resolve(id)

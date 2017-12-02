@@ -28,7 +28,8 @@ router.post("/", (req: ProjectRequest, res) => {
   switch (req.body.action) {
     case "update":
       project.update({
-        repo: req.body.repo
+        repo: req.body.repo,
+        branch: req.body.branch || ""
       });
     // Fall through
     case "reset":

@@ -5,9 +5,15 @@ block config-content
     h3.page-header Register New Project
 
     form(method="POST")
+
         .form-group
             label(for='repo') Git Repository
             input#repo.form-control(type='text', name='repo', placeholder='e.g. git@github.com:mkdocs/mkdocs.git', value=repo, required)
+
+        .form-group
+            label(for='branch') Branch
+            input#branch.form-control(type='text', name='branch', placeholder='e.g. documentation', value=branch)
+
         .form-group
             label(for='id') ID
             input#id.form-control(type='text', name='id', placeholder='e.g. mkdocks', value=id, required)

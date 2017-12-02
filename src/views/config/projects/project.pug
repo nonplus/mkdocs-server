@@ -5,9 +5,15 @@ block config-content
     h3.page-header= `Project: ${project.id}`
 
     form(method="POST")
+
         .form-group
             label(for='repo') Git Repository
             input#repo.form-control(type='text', name='repo', placeholder='e.g. git@github.com:mkdocs/mkdocs.git', value=project.repo, required)
+
+        .form-group
+            label(for='branch') Branch
+            input#branch.form-control(type='text', name='branch', placeholder='e.g. documentation', value=project.branch)
+
         .form-group
             label Deploy Key
             p.
