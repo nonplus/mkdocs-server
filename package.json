@@ -50,6 +50,7 @@
     "nodemon": "1.11.0",
     "passport": "^0.4.0",
     "passport-google-oauth2": "^0.1.6",
+    "passport-slack": "0.0.7",
     "pug": "^2.0.0-rc.4",
     "rimraf": "^2.6.2",
     "shortid": "^2.2.8",

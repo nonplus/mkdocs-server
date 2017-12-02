@@ -95,7 +95,7 @@ class App {
     this.router.use(session({
       name: "session",
       secret: settings.sessionSecret,
-      maxAge: 60000
+      maxAge: 30 * 24 * 60 * 60000
     }));
 
     authRoutes(this.router, auth);
