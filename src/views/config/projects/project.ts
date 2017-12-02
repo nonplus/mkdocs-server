@@ -49,7 +49,7 @@ router.post("/", (req: ProjectRequest, res) => {
       const siteTitle = Settings.get().siteTitle;
       const comment = `MkDocs Server (${req.hostname})`;
       project.deployKey.generate(comment)
-        .catch((err) => $alert.danger = err.toString())
+        .catch( err => $alert.danger = err.toString())
         .then(() => renderProject(req, res, {$alert}));
       return;
   }
@@ -62,7 +62,7 @@ router.post("/rebuild", (req: ProjectRequest, res) => {
 
   project
     .rebuild()
-    .then(() => console.log("Rebuild finished!"), (err) => console.error("Rebuild failed", err));
+    .then(() => console.log("Rebuild finished!"), err => console.error("Rebuild failed", err));
 
   goToConfigProjects(res);
 });

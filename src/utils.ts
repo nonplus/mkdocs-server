@@ -21,17 +21,17 @@ export async function spawnp(command: string, args?: string[], options?: SpawnOp
 
   const log = [];
 
-  childProcess.stdout.on("data", (data) => {
+  childProcess.stdout.on("data", data => {
     log.push(data);
     console.log(`stdout: ${data}`);
   });
 
-  childProcess.stderr.on("data", (data) => {
+  childProcess.stderr.on("data", data => {
     log.push(data);
     console.log(`stderr: ${data}`);
   });
 
-  childProcess.on("close", (code) => {
+  childProcess.on("close", code => {
     console.log(`child process exited with code ${code}`);
     if (code) {
       const error: any = new Error(`${command} exited with ${code}`);
@@ -68,7 +68,7 @@ export async function git(project: Project, args?: string[], options?: SpawnOpti
       })
     });
 
-    const gitArgs = (args || []).map((arg) => _.includes(arg, " ") ? `"${arg}"` : arg).join(" ");
+    const gitArgs = (args || []).map( arg => _.includes(arg, " ") ? `"${arg}"` : arg).join(" ");
     const bashCommand = `${path.join(BinDir, "ssh-git")} ${deployKey.privateFile} ${gitArgs}`;
     return await spawnp("ssh-agent", ["bash", "-c", bashCommand], options);
   } else {

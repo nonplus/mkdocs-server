@@ -57,7 +57,7 @@ class App {
 
   private configStaticSites() {
     Project.publishedProjects()
-      .forEach((project) => {
+      .forEach( project => {
         const siteDirectory = project.siteDirectory;
         console.log("Mapping", `/${project.id}`, "to", siteDirectory);
         this.express.use(`/${project.id}`, ensureAuthenticated, express.static(siteDirectory));
@@ -121,7 +121,7 @@ class App {
           siteTitle: Settings.get().siteTitle,
           usesAuthentication: Settings.usesAuthentication,
           canAdmin: canAdmin(req.user),
-          projects: _.sortBy(Project.publishedProjects(), (project) => (project.title || "").toLowerCase())
+          projects: _.sortBy(Project.publishedProjects(), project => (project.title || "").toLowerCase())
         });
       } else {
         res.render("login", {

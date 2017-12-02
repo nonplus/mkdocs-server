@@ -80,7 +80,7 @@ function renderConfigProjects(req, res, $alert?) {
     httpEquiv: {
       refresh: 5
     },
-    projects: _.sortBy(Project.allProjects(), (project) => (project.id || "").toLowerCase()),
+    projects: _.sortBy(Project.allProjects(), project => (project.id || "").toLowerCase()),
     $alert
   });
 }
