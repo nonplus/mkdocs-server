@@ -4,6 +4,21 @@ block config-content
 
     h3.page-header= `Project: ${project.id}`
 
+    include ../../includes/angular
+
+    script.
+        app.controller("ProjectController", ["$scope", function($scope) {
+          $scope.publishToken = !{ JSON.stringify(project.publishToken || "") };
+
+          $scope.$watch("publishToken", function(val) {
+            if (!$scope.publishToken) {
+              $scope.publishUrl = "";
+            }
+            $scope.publishUrl = !{JSON.stringify(projectPublishUrl)} + "?token=" + encodeURIComponent($scope.publishToken);
+          });
+
+        }]);
+
     form(method="POST")
 
         .form-group
@@ -13,6 +28,17 @@ block config-content
         .form-group
             label(for='branch') Branch
             input#branch.form-control(type='text', name='branch', placeholder='e.g. documentation', value=project.branch)
+
+        div(ng-app="app", ng-controller="ProjectController")
+            .form-group
+                label(for='publishToken') Publish Token
+                input#publishToken.form-control(type='text', name='publishToken', ng-model="publishToken", placeholder='Keep blank to disallow external publishing')
+
+            .form-group(ng-if="publishToken")
+                label(for='publishUrl') Publish URL
+                .input-group
+                    span.input-group-addon POST
+                    input#publishUrl.form-control(type='text', name='publishUrl', ng-model="publishUrl", placeholder='No publishing URL', readonly)
 
         .form-group
             label Deploy Key
@@ -45,20 +71,12 @@ block config-content
             =" "
             button.btn.btn-danger(type="submit" name="action" value="delete") Delete Project
 
-    .well
+    p
         table.table
             tbody
                 tr
                     th.shrink Status
                     td= project.statusLabel
-                if project.mkdocsConfig
-                    tr
-                        th.shrink MkDocs
-                        td
-                            dl.dl-horizontal
-                                each prop in ["site_name", "site_author", "site_description"]
-                                    dt= `${prop}:`
-                                    dd= project.mkdocsConfig[prop]
                 if project.activity
                     tr
                         th.shrink Activity
@@ -67,7 +85,7 @@ block config-content
                     tr
                         th.shrink Error
                         td
-                            div
+                            p
                                 b=project.error.message
                             pre=project.error.log
 

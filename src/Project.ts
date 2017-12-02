@@ -33,6 +33,7 @@ interface ProjectConfig {
   title: string;
   repo: string;
   branch: string;
+  publishToken?: string;
   status: ProjectStatus | null;
   activity: ProjectActivity | null;
   error: {
@@ -93,6 +94,7 @@ export default class Project {
   public title: string;
   public repo: string;
   public branch: string;
+  public publishToken: string;
   public status: ProjectStatus;
   public activity: ProjectActivity | null;
   public error: {
@@ -113,6 +115,7 @@ export default class Project {
     this.title = config.title;
     this.repo = config.repo;
     this.branch = config.branch;
+    this.publishToken = config.publishToken;
     this.error = config.error;
     this.activity = config.activity || null;
     this.mkdocsConfig = config.mkdocsConfig;

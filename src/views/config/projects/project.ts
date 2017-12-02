@@ -29,7 +29,8 @@ router.post("/", (req: ProjectRequest, res) => {
     case "update":
       project.update({
         repo: req.body.repo,
-        branch: req.body.branch || ""
+        branch: req.body.branch || "",
+        publishToken: req.body.publishToken
       });
     // Fall through
     case "reset":
@@ -74,8 +75,8 @@ function goToConfigProjects(res) {
 function renderProject(req: ProjectRequest, res, data?: any) {
   const project = req.project;
   const deployKey = project.deployKey;
-  console.log("deployKey.exists", deployKey.exists);
   res.render("config/projects/project", _.extend({
+    projectPublishUrl: `${req.protocol}://${req.get("host")}/!publish/${project.id}`,
     activeTab: "projects",
     breadcrumbs: req.breadcrumbs,
     project,

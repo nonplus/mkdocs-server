@@ -24,12 +24,13 @@ This project is currently under development and functionality is limited to the 
 
 - [x] Support Deploy Keys for Git Repos
 - [x] Support specifying branch
-- [ ] Add webhook for triggering builds
+- [x] Add webhook for triggering builds
 - [x] Refactor authentication
 - [x] Add support for Slack login
-- [ ] Add support for Microsoft Login
 - [ ] Add support for GitHub Login
+- [ ] Add support for Microsoft Login
 - [ ] Write documentation
+- [ ] Add webhook options to avoid unnecessary rebuilds
 - [ ] Support non-root mkdocs.yaml
 
 ## Running in a Docker Container

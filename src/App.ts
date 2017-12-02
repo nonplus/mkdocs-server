@@ -18,6 +18,7 @@ import {authProviders, authRoutes, ensureAuthenticated, isAuthenticated} from ".
 import Project, {ProjectEvent} from "./Project";
 import Settings, {SettingEvent} from "./Settings";
 import configRouter from "./views/config";
+import publishRouter from "./views/publish";
 
 declare global {
   namespace Express {
@@ -132,6 +133,7 @@ class App {
       }
     });
     this.express.use("/", router);
+    this.express.use("/!publish", publishRouter);
     this.express.use("/!config", ensureAuthenticated, ensureAdmin, configRouter);
   }
 
