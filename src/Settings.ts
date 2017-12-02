@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import * as shortid from "shortid";
 
 import db from "./db/settings";
+import {IAuthGoogle} from "./auth/google";
 
 const DEFAULT_SITE_TITLE = "MkDocs Server";
 
@@ -10,15 +11,10 @@ interface ISettings {
   siteTitle?: string;
   sessionSecret?: string;
   sshPassPhrase?: string;
-  auth?: any;
+  auth?: {
+    google?: IAuthGoogle
+  };
   admins?: string[];
-}
-
-interface IAuthGoogle {
-  clientID: string;
-  clientSecret: string;
-  hostedDomain: string;
-  callbackUrl: string;
 }
 
 export enum SettingEvent {

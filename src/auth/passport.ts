@@ -1,43 +1,13 @@
 import {Router} from "express";
+import * as express from "express";
+import * as _ from "lodash";
 import * as passport from "passport";
-import {Strategy as GoogleStrategy} from "passport-google-oauth2";
 
 import Settings from "../Settings";
 import User from "../User";
 
-function routeAuthGoogle(router: Router, auth) {
-  const config = {
-    clientID: auth.google.clientID,
-    clientSecret: auth.google.clientSecret,
-    callbackURL: auth.google.callbackUrl,
-    passReqToCallback: true
-  };
-
-  passport.use(new GoogleStrategy(config,
-    (request, accessToken, refreshToken, profile, done) => {
-      done(null, {
-        provider: profile.provider,
-        id: profile.id,
-        email: profile.email,
-        name: profile.displayName
-      });
-    }
-  ));
-
-  router.get("/!auth/google", passport.authenticate("google", {
-    hd: auth.google.hostedDomain,
-    scope: ["profile", "email"]
-  } as any));
-
-  router.get("/!auth/google/callback",
-    passport.authenticate("google"),
-    (req, res) => {
-      res.redirect(req.session.returnTo || "/");
-      delete req.session.returnTo;
-    });
-}
-
 export function authRoutes(router: Router, auth) {
+
   passport.serializeUser((user: any, done) => {
     const existingUser = User.resolve(user.id);
     if (!existingUser) {
@@ -56,7 +26,11 @@ export function authRoutes(router: Router, auth) {
   router.use(passport.initialize());
   router.use(passport.session());
 
-  routeAuthGoogle(router, auth);
+  _.forEach(Settings.get().auth, (config, provider) => {
+    const authRouter = express.Router();
+    router.use(`/!auth/${provider}`, authRouter);
+    require(`./${provider}`).configRoutes(authRouter, config);
+  });
 
   router.get("/!auth/logout", (req, res) => {
     if (req.logout) {
@@ -78,7 +52,13 @@ export function ensureAuthenticated(req: Express.Request, res, next) {
   if (req.session) {
     req.session.returnTo = req.originalUrl;
   }
-  res.redirect("/!auth/google");
+
+  const providers = _.keys(Settings.get().auth);
+  if (providers.length === 1) {
+    res.redirect(`/!auth/${providers[0]}`);
+  } else {
+    res.redirect("/");
+  }
 }
 
 export function isAuthenticated(req: Express.Request) {
