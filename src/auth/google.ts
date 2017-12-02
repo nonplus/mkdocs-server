@@ -1,11 +1,12 @@
 import {Router} from "express";
+import * as _ from "lodash";
 import * as passport from "passport";
 import {Strategy} from "passport-google-oauth2";
 
 export interface IAuthGoogle {
   clientID: string;
   clientSecret: string;
-  hostedDomain: string;
+  domains?: string[];
   callbackUrl: string;
 }
 
@@ -19,13 +20,13 @@ export function configRoutes(router: Router, auth: IAuthGoogle) {
 
   passport.use(new Strategy(config,
     (request, accessToken, refreshToken, profile, done) => {
-      if (profile._json.domain !== auth.hostedDomain) {
-        console.warn(`Invalid domain [${profile._json.domain}]`);
-        done(new Error("Invalid host domain"));
+      if (_.isEmpty(auth.domains) && !_.includes(auth.domains, profile._json.domain)) {
+        console.warn(`Invalid domain [${profile._json.domain}], [${auth.domains}]`);
+        done(new Error("Invalid domain"));
       } else {
         done(null, {
           provider: profile.provider,
-          id: profile.id,
+          id: `google:${profile.id}`,
           email: profile.email,
           name: profile.displayName
         });
@@ -34,8 +35,9 @@ export function configRoutes(router: Router, auth: IAuthGoogle) {
   ));
 
   router.get("/", passport.authenticate("google", {
-    hd: auth.hostedDomain,
-    scope: ["profile", "email"]
+    hd: _.first(auth.domains),
+    scope: ["profile", "email"],
+    failureRedirect: "/"
   } as any));
 
   router.get("/callback",

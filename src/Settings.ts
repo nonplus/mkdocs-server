@@ -2,8 +2,8 @@ import {EventEmitter} from "events";
 import * as _ from "lodash";
 import * as shortid from "shortid";
 
-import db from "./db/settings";
 import {IAuthGoogle} from "./auth/google";
+import db from "./db/settings";
 
 const DEFAULT_SITE_TITLE = "MkDocs Server";
 

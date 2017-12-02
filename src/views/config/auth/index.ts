@@ -13,13 +13,17 @@ router.use((req, res, next) => {
 });
 
 router.get("/", (req, res) => {
+  const authGoogle = Settings.get().auth.google;
+  const body = _.extend({}, authGoogle, {
+    domains: (authGoogle.domains || []).join(", ")
+  });
   const viewData = _.extend({},
-    Settings.get().auth.google,
+    body,
     {
       activeTab: "auth",
       authorizedOrigin: `${req.protocol}://${req.get("host")}`,
       callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
-      breadcrumbs: req.breadcrumbs
+      breadcrumbs: req.breadcrumbs,
     }
   );
 
@@ -35,7 +39,7 @@ router.post("/", (req, res) => {
       Settings.setAuth("google", {
         clientID: req.body.clientID,
         clientSecret: req.body.clientSecret,
-        hostedDomain: req.body.hostedDomain,
+        domains: _.map((req.body.domains || "").split(",")).map((domain: string) => _.trim(domain)).filter(_.identity),
         callbackUrl: req.body.callbackUrl
       });
 

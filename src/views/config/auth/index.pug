@@ -19,8 +19,8 @@ block config-content
                 label(for='clientSecret') Google Client Secret
                 input#clientSecret.form-control(type='text', name='clientSecret', placeholder='MkDocs Server', value=clientSecret, required)
         .form-group
-            label(for='hostedDomain') Hosted Domain
-            input#hostedDomain.form-control(type='text', name='hostedDomain', placeholder='my-gsuite-domain.com', value=hostedDomain, required, readonly=clientSecret)
+            label(for='domains') Limit to Domains
+            input#domains.form-control(type='text', name='domains', placeholder='my-gsuite-domain.com, another-domain.com', value=domains, required, readonly=clientSecret)
 
         .alert.alert-info
             p.
