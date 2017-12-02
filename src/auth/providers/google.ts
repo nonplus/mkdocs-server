@@ -12,7 +12,7 @@ export interface IAuthGoogle {
 }
 
 const info: IAuthProviderInfo = {
-  label: "Google OAuth 2.0",
+  label: "Google",
   help: "https://developers.google.com/identity/protocols/OAuth2",
   domains: "Domains",
   inputs: [{

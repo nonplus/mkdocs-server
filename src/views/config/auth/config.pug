@@ -2,13 +2,13 @@ extends ../config-page
 
 block config-content
 
-    h3.page-header= authProvider.info.label
+    h3.page-header #{authProvider.info.label} OAuth 2.0
 
     //pre= JSON.stringify(authProvider.info, null, "  ")
     //pre= JSON.stringify(config, null, "  ")
 
     p
-        a(href=authProvider.info.help, target="_blank") Instruction for authenticating using #{authProvider.info.label}.
+        a(href=authProvider.info.help, target="_blank") Instruction for authenticating using #{authProvider.info.label} OAuth 2.0.
 
     form(method="POST")
         .form-group

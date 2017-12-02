@@ -5,7 +5,8 @@ block page-content
 
   h2.page-header= siteTitle
 
-  p
-    a.btn.btn-lg.btn-default(href="/!auth/google")
-      span.fa.fa-google Sign in with Google
+  each authProvider in authProviders
+    p
+      a.btn.btn-lg.btn-default(href="/!auth/" + authProvider.provider, style="min-width: 12em")
+        span.fa.fa-google Sign in with #{authProvider.info.label}
 

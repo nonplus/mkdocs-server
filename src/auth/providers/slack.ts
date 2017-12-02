@@ -12,7 +12,7 @@ export interface IAuthSlack {
 }
 
 const info: IAuthProviderInfo = {
-  label: "Slack OAuth 2.0",
+  label: "Slack",
   help: "https://api.slack.com/docs/oauth",
   domains: "Teams",
   inputs: [{

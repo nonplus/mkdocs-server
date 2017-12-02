@@ -14,7 +14,7 @@ import session = require("cookie-session");
 import {Application} from "express";
 import * as http from "http";
 import {Server} from "http";
-import {authRoutes, ensureAuthenticated, isAuthenticated} from "./auth/passport";
+import {authProviders, authRoutes, ensureAuthenticated, isAuthenticated} from "./auth/passport";
 import Project, {ProjectEvent} from "./Project";
 import Settings, {SettingEvent} from "./Settings";
 import configRouter from "./views/config";
@@ -57,7 +57,7 @@ class App {
 
   private configStaticSites() {
     Project.publishedProjects()
-      .forEach( project => {
+      .forEach(project => {
         const siteDirectory = project.siteDirectory;
         console.log("Mapping", `/${project.id}`, "to", siteDirectory);
         this.express.use(`/${project.id}`, ensureAuthenticated, express.static(siteDirectory));
@@ -126,6 +126,8 @@ class App {
       } else {
         res.render("login", {
           siteTitle: Settings.get().siteTitle,
+          authProviders: _.filter(authProviders, authProvider =>
+            (Settings.get().auth[authProvider.provider] || {}).clientSecret)
         });
       }
     });
