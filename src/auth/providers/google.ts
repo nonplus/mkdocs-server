@@ -45,7 +45,7 @@ function configRoutes(router: Router, auth: IAuthGoogle) {
 
   passport.use(new Strategy(config,
     (request, accessToken, refreshToken, profile, done) => {
-      if (_.isEmpty(auth.domains) && !_.includes(auth.domains, profile._json.domain)) {
+      if (!_.isEmpty(auth.domains) && !_.includes(auth.domains, profile._json.domain)) {
         console.warn(`Invalid domain [${profile._json.domain}], [${auth.domains}]`);
         done(new Error("Invalid domain"));
       } else {

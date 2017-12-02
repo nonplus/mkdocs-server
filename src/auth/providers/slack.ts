@@ -45,7 +45,7 @@ function configRoutes(router: Router, auth: IAuthSlack) {
 
   passport.use(new Strategy(config,
     (request, accessToken, refreshToken, profile, done) => {
-      if (_.isEmpty(auth.domains) && !_.includes(auth.domains, profile.team.domain)) {
+      if (!_.isEmpty(auth.domains) && !_.includes(auth.domains, profile.team.domain)) {
         console.warn(`Invalid domain [${profile.team.domain}], [${auth.domains}]`);
         done(new Error("Invalid domain"));
       } else {
