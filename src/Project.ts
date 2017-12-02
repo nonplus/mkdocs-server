@@ -213,12 +213,13 @@ export default class Project {
     });
 
     const repoDirectory = this.repoDirectory;
+    const deployKey = this.deployKey;
 
-    const promise = this.deleteRepo();
-
-    promise.then(destroy, destroy);
-
-    return promise;
+    return BPromise.all([
+      this.deleteRepo(),
+      deployKey.discard()
+    ])
+      .then(destroy, destroy);
 
     function destroy() {
       db.get("projects")
