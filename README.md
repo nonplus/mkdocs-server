@@ -22,7 +22,8 @@ This project is currently under development and functionality is limited to the 
 
 ### Roadmap
 
-- [ ] Support Deploy Keys for Git Repos
+- [x] Support Deploy Keys for Git Repos
+- [ ] Support specifying branch
 - [ ] Add webhook for triggering builds
 - [ ] Support non-root mkdocs.yaml
 - [ ] Refactor authentication
