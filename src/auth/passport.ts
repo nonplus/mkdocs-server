@@ -1,10 +1,53 @@
 import {Router} from "express";
 import * as express from "express";
+import * as fs from "fs";
 import * as _ from "lodash";
 import * as passport from "passport";
+import * as path from "path";
 
 import Settings from "../Settings";
 import User from "../User";
+
+export const authProviders = _
+  .chain(fs.readdirSync(path.join(__dirname, "providers")))
+  .filter(dir => _.endsWith(dir, ".js"))
+  .map(dir => dir.replace(/\.js$/, ""))
+  .map(provider => (_.extend({provider}, require(`./providers/${provider}`).default) as IAuthProvider))
+  .keyBy("provider")
+  .value();
+
+interface IAuthProviderInput {
+  id: string;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  protected?: boolean;
+  editable?: boolean;
+  type?: "string" | "string[]";
+}
+
+export interface IAuthProviderInfo {
+  label: string;
+  help: string;
+  domains: string;
+  inputs: IAuthProviderInput[];
+}
+
+export interface IAuthProvider {
+  provider?: string;
+  info: IAuthProviderInfo;
+  configRoutes(router: Router, auth: any): void;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      authProvider?: IAuthProvider;
+    }
+  }
+}
+
+// console.log("authProviders", authProviders);
 
 export function authRoutes(router: Router, auth) {
 
@@ -27,9 +70,12 @@ export function authRoutes(router: Router, auth) {
   router.use(passport.session());
 
   _.forEach(Settings.get().auth, (config, provider) => {
-    const authRouter = express.Router();
-    router.use(`/!auth/${provider}`, authRouter);
-    require(`./${provider}`).configRoutes(authRouter, config);
+    if (config.clientSecret) {
+      console.log(`Using auth provider: ${provider}`);
+      const authRouter = express.Router();
+      router.use(`/!auth/${provider}`, authRouter);
+      authProviders[provider].configRoutes(authRouter, config);
+    }
   });
 
   router.get("/!auth/logout", (req, res) => {

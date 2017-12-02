@@ -2,35 +2,22 @@ extends ../config-page
 
 block config-content
 
-    h3.page-header Authentication
+  h3.page-header Authentication
 
-    form(method="POST")
-        .form-group
-            label(for='authorizedOrigin') Authorized Origin
-            input#authorizedOrigin.form-control(type='text', name='authorizedOrigin', value=authorizedOrigin, readonly)
-        .form-group
-            label(for='callbackUrl') Callback URL
-            input#callbackUrl.form-control(type='text', name='callbackUrl', value=callbackUrl, readonly)
-        .form-group
-            label(for='clientID') Google Client ID
-            input#clientID.form-control(type='text', name='clientID', placeholder='MkDocs Server', value=clientID, required, readonly=clientSecret)
-        if !clientSecret
-            .form-group
-                label(for='clientSecret') Google Client Secret
-                input#clientSecret.form-control(type='text', name='clientSecret', placeholder='MkDocs Server', value=clientSecret, required)
-        .form-group
-            label(for='domains') Limit to Domains
-            input#domains.form-control(type='text', name='domains', placeholder='my-gsuite-domain.com, another-domain.com', value=domains, required, readonly=clientSecret)
-
-        .alert.alert-info
-            p.
-                <b>Note:</b> Once set, authentication settings cannot be changed through the browser.
-
-        hr
-
-        if !clientSecret
-            button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Configuration
-            =" "
-            a.btn.btn-command.btn-default(href="/!config") Cancel
-        else
-            a.btn.btn-command.btn-default(href="/!config") Done
+  table.table.table-condensed
+    thead
+      tr
+        th.shrink(colspan="2") Provider
+        th Restricted To
+        th
+    tbody
+      each auth in authProviders
+        tr
+          th.shrink(style="text-transform: capitalize")= auth.auth.provider
+          td.shrink= auth.config.clientSecret ? "Enabled" : "Disabled"
+          td
+            small.text-muted.pull-right= auth.activityLabel
+            if auth.config.domains && auth.config.domains.length
+              = auth.auth.info.domains + ": " + auth.config.domains
+          td.shrink
+            a.btn.btn-default.btn-xs(href=`/!config/auth/${auth.auth.provider}`) Configure

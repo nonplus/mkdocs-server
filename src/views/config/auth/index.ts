@@ -1,7 +1,10 @@
 import * as express from "express";
 import * as _ from "lodash";
 
+import {authProviders} from "../../../auth/passport";
+import Project from "../../../Project";
 import Settings from "../../../Settings";
+import {ProjectRequest} from "../projects/project";
 
 const router = express.Router();
 
@@ -13,56 +16,109 @@ router.use((req, res, next) => {
 });
 
 router.get("/", (req, res) => {
-  const authGoogle = Settings.get().auth.google;
-  const body = _.extend({}, authGoogle, {
-    domains: (authGoogle.domains || []).join(", ")
+  const authSettings = Settings.get().auth;
+  res.render("config/auth", {
+    activeTab: "auth",
+    breadcrumbs: req.breadcrumbs,
+    authProviders: _.map(authProviders, authProvider => ({
+      auth: authProvider,
+      config: authSettings[authProvider.provider] || {}
+    }))
   });
-  const viewData = _.extend({},
-    body,
-    {
-      activeTab: "auth",
-      authorizedOrigin: `${req.protocol}://${req.get("host")}`,
-      callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
-      breadcrumbs: req.breadcrumbs,
-    }
-  );
-
-  res.render("config/auth", viewData);
 });
 
-router.post("/", (req, res) => {
+const authRouter = express.Router();
+
+router.all("/:provider*", (req: ProjectRequest, res, next) => {
+  const authProvider = authProviders[req.params.provider];
+  if (!authProvider) {
+    res.redirect("/!config/auth");
+  } else {
+    req.authProvider = authProvider;
+    req.breadcrumbs(authProvider.info.label, `/!config/auth/${authProvider.provider}`);
+    next();
+  }
+});
+
+router.use("/:provider", authRouter);
+
+authRouter.get("/", (req, res) => {
+  renderConfig(req, res, {});
+});
+
+authRouter.post("/", (req, res) => {
+  const authProvider = req.authProvider;
+
   switch (req.body.action) {
     case "update":
-      if (Settings.get().auth.google) {
-        break;
-      }
-      Settings.setAuth("google", {
-        clientID: req.body.clientID,
-        clientSecret: req.body.clientSecret,
-        domains: _.map((req.body.domains || "").split(",")).map((domain: string) => _.trim(domain)).filter(_.identity),
-        callbackUrl: req.body.callbackUrl
-      });
 
-      const viewData = _.extend({},
-        req.body,
-        {
-          activeTab: "auth",
-          authorizedOrigin: `${req.protocol}://${req.get("host")}`,
-          callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
-          breadcrumbs: req.breadcrumbs,
-          httpEquiv: {
-            refresh: "2;url=/!config"
-          },
-          $alert: {
-            success: "Authentication settings have been saved and the server is restarting."
+      const configOriginal = Settings.get().auth[authProvider.provider] || {};
+      const config = _.extend({}, configOriginal);
+
+      _.forEach(authProvider.info.inputs, (input, key) => {
+        const inputId = input.id;
+        const inputVal = req.body[inputId];
+        if (!((input.protected || !input.editable) && configOriginal[inputId])) {
+          if (input.type === "string[]") {
+            config[inputId] = _
+              .map((inputVal || "")
+                .split(","))
+              .map((chunk: string) => _.trim(chunk))
+              .filter(_.identity);
+          } else {
+            config[inputId] = inputVal;
           }
         }
-      );
+      });
 
-      res.render("config/auth", viewData);
+      Settings.setAuth(authProvider.provider, config);
 
+      renderConfig(req, res, {
+        httpEquiv: {
+          refresh: "2;url=/!config/auth"
+        },
+        $alert: {
+          success: "Authentication settings have been saved and the server is restarting."
+        }
+      });
+
+      return;
+
+    case "discard":
+      Settings.setAuth(authProvider.provider, {});
+      renderConfig(req, res, {
+        httpEquiv: {
+          refresh: "2;url=/!config/auth"
+        },
+        $alert: {
+          success: "Authentication settings have been discarded and the server is restarting."
+        }
+      });
       return;
   }
 
-  res.redirect("/!config");
+  res.redirect("/!config/auth");
 });
+
+function renderConfig(req, res, viewData) {
+  const authProvider = req.authProvider;
+  const configOriginal = Settings.get().auth[authProvider.provider] || {};
+  const config = _.extend({}, configOriginal);
+
+  _.forEach(authProvider.info.inputs, (input, key) => {
+    if (input.type === "string[]") {
+      config[input.id] = _.join(config[input.id] || [], ", ");
+    }
+  });
+
+  viewData = _.extend({
+    activeTab: "auth",
+    breadcrumbs: req.breadcrumbs,
+    authProvider,
+    config,
+    configOriginal,
+    callbackUrl: `${req.protocol}://${req.get("host")}/!auth/${authProvider.provider}/callback`
+  }, viewData);
+
+  res.render("config/auth/config", viewData);
+}

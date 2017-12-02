@@ -1,0 +1,39 @@
+extends ../config-page
+
+block config-content
+
+    h3.page-header= authProvider.info.label
+
+    //pre= JSON.stringify(authProvider.info, null, "  ")
+    //pre= JSON.stringify(config, null, "  ")
+
+    p
+        a(href=authProvider.info.help, target="_blank") Instruction for authenticating using #{authProvider.info.label}.
+
+    form(method="POST")
+        .form-group
+            label(for='callbackUrl') Callback URL
+            input#callbackUrl.form-control(type='text', name='callbackUrl', value=callbackUrl, readonly)
+
+        each input in authProvider.info.inputs
+            if !(input.protected && configOriginal[input.id])
+                .form-group
+                    label(for=input.id)= input.label
+                    input.form-control(type='text', id=input.id, name=input.id, placeholder=input.placeholder,
+                        value=config[input.id],
+                        readonly=Boolean(configOriginal[input.id] && !input.editable),
+                        required=Boolean(input.required)
+                    )
+
+        hr
+
+        if !configOriginal.clientSecret
+            button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Configuration
+            =" "
+            a.btn.btn-command.btn-default(href="/!config/auth") Cancel
+        else
+            button.btn.btn-command.btn-warning.pull-right(type="submit" name="action" value="discard") Discard
+            =" "
+            button.btn.btn-command.btn-primary(type="submit" name="action" value="update") Save Changes
+            =" "
+            a.btn.btn-command.btn-default(href="/!config/auth") Done

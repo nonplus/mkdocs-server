@@ -2,6 +2,7 @@ import {Router} from "express";
 import * as _ from "lodash";
 import * as passport from "passport";
 import {Strategy} from "passport-google-oauth2";
+import {IAuthProvider, IAuthProviderInfo} from "../passport";
 
 export interface IAuthGoogle {
   clientID: string;
@@ -10,7 +11,31 @@ export interface IAuthGoogle {
   callbackUrl: string;
 }
 
-export function configRoutes(router: Router, auth: IAuthGoogle) {
+const info: IAuthProviderInfo = {
+  label: "Google OAuth 2.0",
+  help: "https://developers.google.com/identity/protocols/OAuth2",
+  domains: "Domains",
+  inputs: [{
+    id: "clientID",
+    required: true,
+    label: "Client ID",
+    placeholder: "OAuth2 Client ID for your registered Google application"
+  }, {
+    id: "clientSecret",
+    required: true,
+    protected: true,
+    label: "Client Secret",
+    placeholder: "OAuth2 Client Secret for your registered Google application"
+  }, {
+    id: "domains",
+    editable: true,
+    label: "Limit to Domains",
+    placeholder: "my-gsuite-domain.com, another-domain.com",
+    type: "string[]"
+  }]
+};
+
+function configRoutes(router: Router, auth: IAuthGoogle) {
   const config = {
     clientID: auth.clientID,
     clientSecret: auth.clientSecret,
@@ -48,3 +73,9 @@ export function configRoutes(router: Router, auth: IAuthGoogle) {
     });
 
 }
+
+const authProvider: IAuthProvider = {
+  info, configRoutes
+};
+
+export default authProvider;

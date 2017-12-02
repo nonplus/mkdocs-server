@@ -2,7 +2,7 @@ import {EventEmitter} from "events";
 import * as _ from "lodash";
 import * as shortid from "shortid";
 
-import {IAuthGoogle} from "./auth/google";
+import {IAuthGoogle} from "./auth/providers/google";
 import db from "./db/settings";
 
 const DEFAULT_SITE_TITLE = "MkDocs Server";
@@ -64,10 +64,11 @@ export default class Settings {
   }
 
   public static setAuth(method: "google", value: IAuthGoogle);
+  public static setAuth(method: string, value: any);
   public static setAuth(method: string, value: any) {
-    db.get("settings")
+    db.get("settings.auth")
       .assign({
-        auth: {[method]: value}
+        [method]: value
       })
       .write();
     Settings.usesAuth = true;

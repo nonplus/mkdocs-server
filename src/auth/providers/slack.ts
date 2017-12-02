@@ -2,6 +2,7 @@ import {Router} from "express";
 import * as _ from "lodash";
 import * as passport from "passport";
 import {Strategy} from "passport-slack";
+import {IAuthProvider, IAuthProviderInfo} from "../passport";
 
 export interface IAuthSlack {
   clientID: string;
@@ -10,7 +11,31 @@ export interface IAuthSlack {
   callbackUrl: string;
 }
 
-export function configRoutes(router: Router, auth: IAuthSlack) {
+const info: IAuthProviderInfo = {
+  label: "Slack OAuth 2.0",
+  help: "https://api.slack.com/docs/oauth",
+  domains: "Teams",
+  inputs: [{
+    id: "clientID",
+    required: true,
+    label: "Client ID",
+    placeholder: "OAuth2 Client ID for your registered Slack application"
+  }, {
+    id: "clientSecret",
+    required: true,
+    label: "Client Secret",
+    placeholder: "OAuth2 Client Secret for your registered Slack application",
+    protected: true
+  }, {
+    id: "domains",
+    label: "Limit to Teams",
+    placeholder: "my-team, another-team",
+    type: "string[]",
+    editable: true
+  }]
+};
+
+function configRoutes(router: Router, auth: IAuthSlack) {
   const config = {
     clientID: auth.clientID,
     clientSecret: auth.clientSecret,
@@ -47,3 +72,9 @@ export function configRoutes(router: Router, auth: IAuthSlack) {
     });
 
 }
+
+const authProvider: IAuthProvider = {
+  info, configRoutes
+};
+
+export default authProvider;
