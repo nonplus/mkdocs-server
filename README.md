@@ -23,14 +23,14 @@ This project is currently under development and functionality is limited to the 
 ### Roadmap
 
 - [x] Support Deploy Keys for Git Repos
-- [ ] Support specifying branch
+- [x] Support specifying branch
 - [ ] Add webhook for triggering builds
-- [ ] Support non-root mkdocs.yaml
-- [ ] Refactor authentication
+- [x] Refactor authentication
+- [x] Add support for Slack login
 - [ ] Add support for Microsoft Login
 - [ ] Add support for GitHub Login
-- [ ] Add support for Slack login
 - [ ] Write documentation
+- [ ] Support non-root mkdocs.yaml
 
 ## Running in a Docker Container
 
