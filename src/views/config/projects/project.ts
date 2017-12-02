@@ -75,6 +75,7 @@ function renderProject(req: ProjectRequest, res, data?: any) {
   const deployKey = project.deployKey;
   console.log("deployKey.exists", deployKey.exists);
   res.render("config/projects/project", _.extend({
+    activeTab: "projects",
     breadcrumbs: req.breadcrumbs,
     project,
     deployKey: deployKey.exists ? deployKey.publicKey : ""

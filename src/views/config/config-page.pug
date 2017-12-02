@@ -4,4 +4,34 @@ block page-content
 
     include ../includes/breadcrumbs
 
-    block config-content
+    style.
+        .panel.with-nav-tabs .panel-heading {
+            padding: 5px 5px 0 5px;
+        }
+
+        .panel.with-nav-tabs .nav-tabs {
+            border-bottom: none;
+        }
+
+        .panel.with-nav-tabs .nav-justified {
+            margin-bottom: -1px;
+        }
+
+        .panel.with-nav-tabs h3 {
+            margin-top: 15px;
+        }
+
+    .panel.with-nav-tabs.panel-default
+
+        .panel-heading
+            ul.nav.nav-tabs
+                li(role='presentation', class = activeTab == "projects" ? "active" : "")
+                    a(href='/!config/projects') Projects
+                li(role='presentation', class = activeTab == "settings" ? "active" : "")
+                    a(href='/!config/settings') Settings
+                li(role='presentation', class = activeTab == "auth" ? "active" : "")
+                    a(href='/!config/auth') Authentication
+
+
+        .panel-body
+            block config-content

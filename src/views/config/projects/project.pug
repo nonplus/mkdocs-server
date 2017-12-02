@@ -2,7 +2,7 @@ extends ../config-page
 
 block config-content
 
-    h2.page-header= `Project: ${project.id}`
+    h3.page-header= `Project: ${project.id}`
 
     form(method="POST")
         .form-group
@@ -39,28 +39,29 @@ block config-content
             =" "
             button.btn.btn-danger(type="submit" name="action" value="delete") Delete Project
 
-    table.table
-        tbody
-            tr
-                th.shrink Status
-                td= project.statusLabel
-            if project.mkdocsConfig
+    .well
+        table.table
+            tbody
                 tr
-                    th.shrink MkDocs
-                    td
-                        dl.dl-horizontal
-                            each prop in ["site_name", "site_author", "site_description"]
-                                dt= `${prop}:`
-                                dd= project.mkdocsConfig[prop]
-            if project.activity
-                tr
-                    th.shrink Activity
-                    td= project.activityLabel
-            if project.error
-                tr
-                    th.shrink Error
-                    td
-                        div
-                            b=project.error.message
-                        pre=project.error.log
+                    th.shrink Status
+                    td= project.statusLabel
+                if project.mkdocsConfig
+                    tr
+                        th.shrink MkDocs
+                        td
+                            dl.dl-horizontal
+                                each prop in ["site_name", "site_author", "site_description"]
+                                    dt= `${prop}:`
+                                    dd= project.mkdocsConfig[prop]
+                if project.activity
+                    tr
+                        th.shrink Activity
+                        td= project.activityLabel
+                if project.error
+                    tr
+                        th.shrink Error
+                        td
+                            div
+                                b=project.error.message
+                            pre=project.error.log
 

@@ -15,6 +15,7 @@ router.use((req, res, next) => {
 router.get("/", (req, res) => {
   const admins = Settings.get().admins.join(", ");
   res.render("config/settings", {
+    activeTab: "settings",
     breadcrumbs: req.breadcrumbs,
     siteTitle: Settings.get().siteTitle,
     admins,

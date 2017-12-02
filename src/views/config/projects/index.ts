@@ -24,6 +24,7 @@ router.use("/new", (req, res, next) => {
 
 router.get("/new", (req, res) => {
   res.render("config/projects/new-project", {
+    activeTab: "projects",
     breadcrumbs: req.breadcrumbs
   });
 });
@@ -38,6 +39,7 @@ router.post("/new", (req, res) => {
 
   if (existing) {
     res.render("config/projects/new-project", {
+      activeTab: "projects",
       breadcrumbs: req.breadcrumbs,
       repo, id, title, $alert: {
         danger: `The "${id}" ID is already used by the "${existing.title}" project.`
@@ -71,6 +73,7 @@ function goToConfigProjects(res) {
 
 function renderConfigProjects(req, res, $alert?) {
   res.render("config/projects/index", {
+    activeTab: "projects",
     breadcrumbs: req.breadcrumbs,
     httpEquiv: {
       refresh: 5

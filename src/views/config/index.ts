@@ -8,15 +8,8 @@ const router = express.Router();
 
 export default router;
 
-router.use((req, res, next) => {
-  req.breadcrumbs("Config", "/!config");
-  next();
-});
-
 router.get("/", (req, res) => {
-  res.render("config/index", {
-    breadcrumbs: req.breadcrumbs
-  });
+  res.redirect("/!config/projects");
 });
 
 router.use("/auth", authRouter);

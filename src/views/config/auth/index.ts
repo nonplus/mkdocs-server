@@ -16,6 +16,7 @@ router.get("/", (req, res) => {
   const viewData = _.extend({},
     Settings.get().auth.google,
     {
+      activeTab: "auth",
       authorizedOrigin: `${req.protocol}://${req.get("host")}`,
       callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
       breadcrumbs: req.breadcrumbs
@@ -41,6 +42,7 @@ router.post("/", (req, res) => {
       const viewData = _.extend({},
         req.body,
         {
+          activeTab: "auth",
           authorizedOrigin: `${req.protocol}://${req.get("host")}`,
           callbackUrl: `${req.protocol}://${req.get("host")}/!auth/google/callback`,
           breadcrumbs: req.breadcrumbs,
