@@ -55,10 +55,15 @@ authRouter.post("/", (req, res) => {
       const configOriginal = Settings.get().auth[authProvider.provider] || {};
       const config = _.extend({}, configOriginal);
 
+      // Store callbackUrl
+      if (!configOriginal.callbackUrl) {
+        config.callbackUrl = req.body.callbackUrl;
+      }
+
       _.forEach(authProvider.info.inputs, (input, key) => {
         const inputId = input.id;
         const inputVal = req.body[inputId];
-        if (!((input.protected || !input.editable) && configOriginal[inputId])) {
+        if (!configOriginal[inputId] || (!input.protected || input.editable)) {
           if (input.type === "string[]") {
             config[inputId] = _
               .map((inputVal || "")

@@ -2,8 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import Settings from "./Settings";
 import {spawnp} from "./utils";
-
-const sshDir = path.resolve("./data/.ssh");
+import {SshDir} from "./config";
 
 export default class DeployKey {
 
@@ -29,11 +28,11 @@ export default class DeployKey {
   }
 
   public get privateFile() {
-    return path.join(sshDir, this.id);
+    return path.join(SshDir, this.id);
   }
 
   private get publicFile() {
-    return path.join(sshDir, `${this.id}.pub`);
+    return path.join(SshDir, `${this.id}.pub`);
   }
 
 }

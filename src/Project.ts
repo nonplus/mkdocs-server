@@ -5,7 +5,7 @@ import * as path from "path";
 import rimraf = require("rimraf");
 import * as YAML from "yamljs";
 
-import {DataDir} from "./config";
+import {DataDir, ReposDir} from "./config";
 import db from "./db/projects";
 import DeployKey from "./DeployKey";
 import {git, spawnp} from "./utils";
@@ -49,8 +49,6 @@ interface ProjectConfig {
     site_dir?: string;
   };
 }
-
-const reposDirectory = `${DataDir}/repos`;
 
 export default class Project {
 
@@ -140,7 +138,7 @@ export default class Project {
   }
 
   get repoDirectory(): string {
-    return path.join(reposDirectory, this.id);
+    return path.join(ReposDir, this.id);
   }
 
   get siteDescription(): string {
@@ -256,7 +254,7 @@ export default class Project {
       command.push(this.id);
 
       await git(this, command, {
-        cwd: reposDirectory
+        cwd: ReposDir
       });
       this.refreshMkdDocsInfo();
       this.update({
