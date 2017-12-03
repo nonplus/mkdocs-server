@@ -5,9 +5,12 @@ block page-content
   h2.page-header
     if !usesAuthentication
       a.btn.pull-right.btn-warning(href="/!config/auth") Authentication Not Configured
-    else if canAdmin
-      a.btn.btn-link.pull-right(href="/!config")
-        span.glyphicon.glyphicon-cog(aria-hidden='true', title="Config")
+    else
+      if canAdmin
+        a.btn.btn-link.pull-right(href="/!config")
+          span.glyphicon.glyphicon-cog(aria-hidden='true', title="Config")
+      a.btn.btn-link.pull-right(href="/!auth/logout")
+        span.glyphicon.glyphicon-lock(aria-hidden='true', title="Logout")
 
     =siteTitle
 

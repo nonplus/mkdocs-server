@@ -27,7 +27,7 @@ This project is currently under development and functionality is limited to the 
 - [x] Add webhook for triggering builds
 - [x] Refactor authentication
 - [x] Add support for Slack login
-- [ ] Add support for GitHub Login
+- [x] Add support for GitHub Login
 - [ ] Add support for Microsoft Login
 - [ ] Write documentation
 - [ ] Add webhook options to avoid unnecessary rebuilds
