@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
+import {SshDir} from "./config";
 import Settings from "./Settings";
 import {spawnp} from "./utils";
-import {SshDir} from "./config";
 
 export default class DeployKey {
 

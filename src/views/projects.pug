@@ -14,6 +14,18 @@ block page-content
 
     =siteTitle
 
+  if !projects.length
+    p.
+      Currently there are no sites published on this MkDocs Server.
+
+    if canAdmin
+      p.
+        To get started, you can:
+      ol
+        li <a href="/!config/projects">Add one or more projects</a>
+        li <a href="/!config/auth">Configure User Authentication</a>
+        li <a href="/!config/settings">Customize the site settings and administrators</a>
+
   .list-group
     each project in projects
       a.list-group-item(href='/' + project.id)
