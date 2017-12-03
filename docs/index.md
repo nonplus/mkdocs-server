@@ -21,7 +21,7 @@ and they will not be able to access the static sites until they do so.
 
 | Home Page (Anonymous User) |
 | ---- |
-| ![Home Page (Anonymous User)](../img/home-logged-out.png "Home Page (Anonymous User)") |
+| ![Home Page (Anonymous User)](./img/home-logged-out.png "Home Page (Anonymous User)") |
 
 ## Authenticated Users
 
@@ -30,7 +30,7 @@ Clicking on a site name will take the user to the published site.
 
 | Home Page (Authenticated User) |
 | ---- |
-| ![Home Page (Authenticated User)](../img/home-logged-in.png "Home Page (Authenticated User)") |
+| ![Home Page (Authenticated User)](./img/home-logged-in.png "Home Page (Authenticated User)") |
 
 If the user is also an administrator, they will be able to configure settings and
 register additional projects.

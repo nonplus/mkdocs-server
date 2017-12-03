@@ -4,7 +4,7 @@ When the server is installed and running, the browser shows the following initia
 
 | Initial Home Page |
 | ---- |
-| ![Initial Home Page](../img/home-initial.png "Initial Home Page") |
+| ![Initial Home Page](./img/home-initial.png "Initial Home Page") |
 
 ## Authentication
 
@@ -13,7 +13,7 @@ with a 3rd party password befor accessing the MkDocs Server.
 
 | Configuration for Google OAuth 2.0 |
 | ---- |
-| ![Google OAuth 2.0 Configuration](../img/auth-google.png "Google OAuth 2.0 Configuration") |
+| ![Google OAuth 2.0 Configuration](./img/auth-google.png "Google OAuth 2.0 Configuration") |
 
 MkDocs Server leverages OAuth 2.0 authentication.  You have to configure
 a client application in your OAuth provider and supply the corresponding
@@ -29,7 +29,7 @@ The *Site Title* allow you to specify the header text displayed on the home page
 
 | Settings Configuration |
 | ---- |
-| ![Settings](../img/config-settings.png "Settings") |
+| ![Settings](./img/config-settings.png "Settings") |
 
 The *Administrators* setting allows you to list the email addresses that have
 access to the configurations.
@@ -44,7 +44,7 @@ The *Projects* configuration allows you to add new projects.
 
 | Registering a new project |
 | ---- |
-| ![Register new project](../img/project-new.png "Register new project") |
+| ![Register new project](./img/project-new.png "Register new project") |
 
 The *Git Repository* settings contains the URL to the repository wher the MkDocs source is located.
 Re repository should have a `mkdocs.yaml` file in its root directory.
@@ -59,7 +59,7 @@ The Projects list shows all registered projects.
 
 | List of registered projects |
 | ---- |
-| ![Project List](../img/projects-list.png "Project List") |
+| ![Project List](./img/projects-list.png "Project List") |
 
 The *Status* indicates the state the project is in.
 Only _Published_ projects are listed on the home page.
@@ -77,7 +77,7 @@ You can change the configuration of an existing project.
 
 | Configuring an registered project |
 | ---- |
-| ![Edit project](../img/project-edit.png "Edit project") |
+| ![Edit project](./img/project-edit.png "Edit project") |
 
 The *Reset Project* button deletes the cloned directory and published site, but keeps the project configuration.
 
