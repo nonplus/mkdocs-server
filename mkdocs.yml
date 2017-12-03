@@ -1,0 +1,3 @@
+site_name: MkDocs Server
+site_description: Server for building MkDocs sites from Git Repos and hosting generated sites accessible to authenticated users
+theme: material

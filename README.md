@@ -12,14 +12,6 @@ However, there isn't an easy way to restrict access to GitHub Pages documentatio
 The MkDocs Server can automatically build [MkDocs](http://www.mkdocs.org/) sites from remote Git repositories
 and restrict access to the generated sites to authenticated users.
 
-## Caveats
-
-This project is currently under development and functionality is limited to the following:
-
-1. Only supports Google Authentication (can add others in the future)
-1. Only clones repos that don't require credentials (i.e. you have manually create/configure deploy keys)
-1. No user documentaion (ironic, I know...)
-
 ### Roadmap
 
 - [x] Support Deploy Keys for Git Repos
@@ -30,7 +22,7 @@ This project is currently under development and functionality is limited to the 
 - [x] Add support for GitHub Login
 - [ ] Add support for Microsoft Login
 - [ ] Write documentation
-- [ ] Add webhook options to avoid unnecessary rebuilds
+- [x] Add webhook options to avoid unnecessary rebuilds
 - [ ] Support non-root mkdocs.yaml
 
 ## Running in a Docker Container
